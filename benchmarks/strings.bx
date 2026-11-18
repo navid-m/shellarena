@@ -1,0 +1,18 @@
+#!/usr/bin/env blood
+# shellarena: string building
+
+rounds = 10000
+i = 0
+checksum = 0
+s = ""
+
+while i < rounds {
+    s = s + "blood"
+    checksum = checksum + len(s)
+    if len(s) >= 500 {
+        s = ""
+    }
+    i = i + 1
+}
+
+say "strings {checksum}"

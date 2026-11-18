@@ -1,0 +1,17 @@
+#!/bin/sh
+# shellarena: string building
+
+i=0
+checksum=0
+s=""
+
+while [ "$i" -lt 10000 ]; do
+    s="$s""blood"
+    checksum=$(( checksum + ${#s} ))
+    if [ "${#s}" -ge 500 ]; then
+        s=""
+    fi
+    i=$(( i + 1 ))
+done
+
+printf 'strings %s\n' "$checksum"

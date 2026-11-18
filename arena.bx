@@ -1,0 +1,581 @@
+#!/usr/bin/env blood
+# shellarena — a cross-shell performance arena.
+#
+# Runs the same small workloads through every installed shell, measures them
+# with hyperfine, validates that every shell computes the same checksum, and
+# writes a self-contained HTML report.
+#
+# Usage:
+#   blood arena.bx [--quick] [--help]
+#
+# Environment:
+#   BLOOD_BIN     path to the Blood binary (otherwise found on PATH)
+#   ARENA_RUNS    hyperfine runs per command (default 8)
+#   ARENA_WARMUP  hyperfine warmup runs per command (default 2)
+#   ARENA_ONLY    comma-separated shell keys to test (default all installed)
+#   ARENA_BENCH   comma-separated benchmark ids to run (default all)
+
+fn shq(s) {
+    return "'" + s.replace("'", "'\\''") + "'"
+}
+
+hf_shell_opt = ""
+
+fn jstr(s) {
+    if type(s) != "string" {
+        return "null"
+    }
+    return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") + "\""
+}
+
+fn jstr_list(xs) {
+    out = "["
+    i = 0
+    while i < len(xs) {
+        if i > 0 {
+            out = out + ","
+        }
+        out = out + jstr(xs[i])
+        i = i + 1
+    }
+    return out + "]"
+}
+
+fn trim(s) {
+    if s == none {
+        return ""
+    }
+    return s.strip()
+}
+
+fn first_line(s) {
+    s = trim(s)
+    if s == "" {
+        return ""
+    }
+    return s.split("\n")[0].strip()
+}
+
+fn script_root() {
+    path = __file__
+    parts = path.split("/")
+    parts.pop()
+    root = parts.join("/")
+    if root == "" {
+        root = "."
+    }
+    return root
+}
+
+fn which(name) {
+    return trim(capture("sh -c 'command -v " + name + " 2>/dev/null'"))
+}
+
+fn version_of(exe, suffix) {
+    if exe == "" {
+        return ""
+    }
+    return first_line(capture(shq(exe) + " " + suffix + " 2>&1"))
+}
+
+fn int_env(name, fallback, minimum) {
+    raw = env(name)
+    if raw == none {
+        return fallback
+    }
+    raw = trim(raw)
+    if raw == "" {
+        return fallback
+    }
+    n = 0
+    try {
+        n = int(raw)
+    } catch err {
+        return fallback
+    }
+    if n < minimum {
+        return fallback
+    }
+    return n
+}
+
+fn flags_suffix(flags) {
+    out = ""
+    for flag in flags {
+        out = out + " " + shq(flag)
+    }
+    return out
+}
+
+fn bench_cmd(s, path) {
+    return shq(s.exe) + flags_suffix(s.flags) + " " + shq(path)
+}
+
+fn shell_record(key, label, exe, flags, ext, color, vcmd) {
+    return {"key": key, "label": label, "exe": exe, "flags": flags, "ext": ext, "color": color, "vcmd": vcmd}
+}
+
+fn add_detected(detected, key, label, exe, flags, ext, color, vcmd) {
+    if exe != "" {
+        detected.append(shell_record(key, label, exe, flags, ext, color, vcmd))
+    }
+}
+
+fn detect_shells(root) {
+    detected = []
+
+    ksh = which("ksh93")
+    if ksh == "" {
+        ksh = which("ksh")
+    }
+    add_detected(detected, "ksh", "ksh", ksh, [], "ksh", "#f0a45b", "--version")
+
+    add_detected(detected, "zsh", "zsh", which("zsh"), ["-f"], "zsh", "#8fd46d", "--version")
+    add_detected(detected, "fish", "fish", which("fish"), ["--no-config"], "fish", "#8aa6ff", "--version")
+    add_detected(detected, "elvish", "elvish", which("elvish"), ["-norc"], "elv", "#c792ea", "-version")
+
+    blood = trim(env("BLOOD_BIN"))
+    if blood == "" {
+        candidate = root + "/../blood/blood"
+        if shell("test -x " + shq(candidate)) == 0 {
+            blood = candidate
+        }
+    }
+    if blood == "" {
+        candidate = root + "/../blood/blood-dev"
+        if shell("test -x " + shq(candidate)) == 0 {
+            blood = candidate
+        }
+    }
+    if blood == "" {
+        blood = which("blood")
+    }
+    add_detected(detected, "blood", "blood", blood, [], "bx", "#ff3b5c", "-version")
+
+    add_detected(detected, "nushell", "nushell", which("nu"), ["--no-config-file"], "nu", "#5fb3c9", "--version")
+    add_detected(detected, "bash", "bash", which("bash"), [], "bash", "#6ee7a8", "--version")
+    add_detected(detected, "dash", "dash", which("dash"), [], "dash", "#f4d35e", "-c 'echo $DASH_VERSION'")
+
+    return detected
+}
+
+fn known_shells() {
+    return [
+        { "key": "ksh", "label": "ksh", "color": "#f0a45b" },
+        { "key": "zsh", "label": "zsh", "color": "#8fd46d" },
+        { "key": "fish", "label": "fish", "color": "#8aa6ff" },
+        { "key": "elvish", "label": "elvish", "color": "#c792ea" },
+        { "key": "blood", "label": "blood", "color": "#ff3b5c" },
+        { "key": "nushell", "label": "nushell", "color": "#5fb3c9" },
+        { "key": "bash", "label": "bash", "color": "#6ee7a8" },
+        { "key": "dash", "label": "dash", "color": "#f4d35e" }
+    ]
+}
+
+fn contains(xs, value) {
+    for x in xs {
+        if x == value {
+            return true
+        }
+    }
+    return false
+}
+
+fn shell_by_key(shells, key) {
+    for s in shells {
+        if s.key == key {
+            return s
+        }
+    }
+    return none
+}
+
+fn filter_shells(detected, only_raw, filtered) {
+    if only_raw == "" {
+        return detected
+    }
+    wanted = []
+    for part in only_raw.split(",") {
+        part = part.strip()
+        if part != "" {
+            wanted.append(part)
+        }
+    }
+    out = []
+    for s in detected {
+        if contains(wanted, s.key) {
+            out.append(s)
+        } else {
+            filtered.append({"key": s.key, "label": s.label, "color": s.color, "reason": "excluded by ARENA_ONLY"})
+        }
+    }
+    return out
+}
+
+fn filter_benches(benches, bench_raw) {
+    if bench_raw == "" {
+        return benches
+    }
+    wanted = []
+    for part in bench_raw.split(",") {
+        part = part.strip()
+        if part != "" {
+            wanted.append(part)
+        }
+    }
+    out = []
+    for b in benches {
+        if contains(wanted, b.id) {
+            out.append(b)
+        }
+    }
+    return out
+}
+
+fn missing_shells(known, detected) {
+    installed_keys = []
+    for s in detected {
+        installed_keys.append(s.key)
+    }
+    out = []
+    for k in known {
+        if not contains(installed_keys, k.key) {
+            out.append({"key": k.key, "label": k.label, "color": k.color, "reason": "not found on PATH"})
+        }
+    }
+    return out
+}
+
+fn json_shells(shells) {
+    out = "["
+    i = 0
+    while i < len(shells) {
+        s = shells[i]
+        if i > 0 {
+            out = out + ","
+        }
+        out = out + "{"
+        out = out + "\"key\":" + jstr(s.key) + ","
+        out = out + "\"label\":" + jstr(s.label) + ","
+        out = out + "\"exe\":" + jstr(s.exe) + ","
+        out = out + "\"flags\":" + jstr_list(s.flags) + ","
+        out = out + "\"ext\":" + jstr(s.ext) + ","
+        out = out + "\"color\":" + jstr(s.color) + ","
+        out = out + "\"version\":" + jstr(version_of(s.exe, s.vcmd)) + ","
+        out = out + "\"installed\":true"
+        out = out + "}"
+        i = i + 1
+    }
+    return out + "]"
+}
+
+fn json_marks(items) {
+    out = "["
+    i = 0
+    while i < len(items) {
+        item = items[i]
+        if i > 0 {
+            out = out + ","
+        }
+        out = out + "{"
+        out = out + "\"key\":" + jstr(item.key) + ","
+        out = out + "\"label\":" + jstr(item.label) + ","
+        out = out + "\"color\":" + jstr(item.color) + ","
+        out = out + "\"reason\":" + jstr(item.reason)
+        out = out + "}"
+        i = i + 1
+    }
+    return out + "]"
+}
+
+fn json_known(known) {
+    out = "["
+    i = 0
+    while i < len(known) {
+        k = known[i]
+        if i > 0 {
+            out = out + ","
+        }
+        out = out + "{\"key\":" + jstr(k.key) + ",\"label\":" + jstr(k.label) + ",\"color\":" + jstr(k.color) + "}"
+        i = i + 1
+    }
+    return out + "]"
+}
+
+fn validate_bench(bench, shells, root) {
+    checksums = {}
+    validation = {}
+    reference = ""
+    have_reference = false
+    for s in shells {
+        path = root + "/" + bench.stem + "." + s.ext
+        cmd = bench_cmd(s, path)
+        output = trim(capture(cmd))
+        checksums[s.key] = output
+        if bench.id == "startup" {
+            validation[s.key] = "skipped"
+        } elif not have_reference {
+            reference = output
+            have_reference = true
+            validation[s.key] = "ok"
+        } elif output == reference {
+            validation[s.key] = "ok"
+        } else {
+            validation[s.key] = "mismatch (expected " + reference + ", got " + output + ")"
+        }
+    }
+    return { "checksums": checksums, "validation": validation }
+}
+
+fn json_map_strings(m) {
+    out = "{"
+    i = 0
+    for key in m {
+        if i > 0 {
+            out = out + ","
+        }
+        out = out + jstr(key) + ":" + jstr(m[key])
+        i = i + 1
+    }
+    return out + "}"
+}
+
+fn json_commands(bench, shells, root) {
+    out = "{"
+    i = 0
+    for s in shells {
+        path = root + "/" + bench.stem + "." + s.ext
+        if i > 0 {
+            out = out + ","
+        }
+        out = out + jstr(s.key) + ":" + jstr(bench_cmd(s, path))
+        i = i + 1
+    }
+    return out + "}"
+}
+
+fn run_benchmark(bench, shells, root, results_dir, runs, warmup) {
+    usable = []
+    for s in shells {
+        path = root + "/" + bench.stem + "." + s.ext
+        if shell("test -r " + shq(path)) == 0 {
+            usable.append(s)
+        } else {
+            say "warning: " + s.label + " is installed but " + path + " is missing"
+        }
+    }
+
+    result = {"id": bench.id, "title": bench.title, "description": bench.description, "workload": bench.workload, "commands": json_commands(bench, usable, root), "checksums": "{}", "validation": "{}", "results": "{\"results\":[]}", "error": ""}
+
+    if len(usable) == 0 {
+        result.error = "no shell had a runnable script"
+        return result
+    }
+
+    say ""
+    say "==> " + bench.title + " (" + bench.workload + ")"
+    for s in usable {
+        say "    " + s.label + ": " + root + "/" + bench.stem + "." + s.ext
+    }
+
+    check = validate_bench(bench, usable, root)
+    result.checksums = json_map_strings(check.checksums)
+    result.validation = json_map_strings(check.validation)
+    for s in usable {
+        v = check.validation[s.key]
+        if v != "ok" and v != "skipped" {
+            say "warning: " + bench.id + "/" + s.label + ": checksum " + v
+        }
+    }
+
+    results_path = results_dir + "/" + bench.id + ".json"
+    hf = "hyperfine " + hf_shell_opt + "--warmup " + str(warmup) + " --runs " + str(runs) + " --export-json " + shq(results_path)
+    for s in usable {
+        path = root + "/" + bench.stem + "." + s.ext
+        hf = hf + " -n " + shq(s.key) + " " + shq(bench_cmd(s, path))
+    }
+
+    status = shell(hf)
+    if status != 0 {
+        result.error = "hyperfine exited with status " + str(status)
+        say "error: hyperfine failed for " + bench.id
+        return result
+    }
+
+    raw = read_file(results_path)
+    if raw == none {
+        result.error = "hyperfine did not write " + results_path
+        say "error: " + result.error
+        return result
+    }
+
+    result.results = trim(raw)
+    return result
+}
+
+fn json_benchmarks(benchmarks) {
+    out = "["
+    i = 0
+    for b in benchmarks {
+        if i > 0 {
+            out = out + ","
+        }
+        out = out + "{"
+        out = out + "\"id\":" + jstr(b.id) + ","
+        out = out + "\"title\":" + jstr(b.title) + ","
+        out = out + "\"description\":" + jstr(b.description) + ","
+        out = out + "\"workload\":" + jstr(b.workload) + ","
+        out = out + "\"commands\":" + b.commands + ","
+        out = out + "\"checksums\":" + b.checksums + ","
+        out = out + "\"validation\":" + b.validation + ","
+        out = out + "\"error\":" + jstr(b.error) + ","
+        out = out + "\"results\":" + b.results
+        out = out + "}"
+        i = i + 1
+    }
+    return out + "]"
+}
+
+fn usage() {
+    say "shellarena — cross-shell performance arena"
+    say ""
+    say "usage: blood arena.bx [--quick] [--help]"
+    say ""
+    say "environment:"
+    say "  BLOOD_BIN     path to the Blood binary"
+    say "  ARENA_RUNS    hyperfine runs per command (default 8)"
+    say "  ARENA_WARMUP  hyperfine warmup runs (default 2)"
+    say "  ARENA_ONLY    comma-separated shells (ksh,zsh,fish,elvish,blood,nushell,bash,dash)"
+    say "  ARENA_BENCH   comma-separated benchmarks (startup,arith,strings,functions)"
+}
+
+root = script_root()
+results_dir = root + "/results"
+report_path = root + "/report.html"
+data_path = results_dir + "/arena.json"
+
+if contains(args, "--help") or contains(args, "-h") {
+    usage()
+    exit(0)
+}
+
+quick = contains(args, "--quick")
+runs = 8
+warmup = 2
+if quick {
+    runs = 3
+    warmup = 1
+}
+runs = int_env("ARENA_RUNS", runs, 1)
+warmup = int_env("ARENA_WARMUP", warmup, 0)
+
+if which("hyperfine") == "" {
+    say "error: hyperfine is required but was not found on PATH"
+    say "install it from https://github.com/sharkdp/hyperfine"
+    exit(1)
+}
+
+say "shellarena"
+say "  root:      " + root
+say "  hyperfine: " + first_line(capture("hyperfine --version"))
+say "  runs:      " + str(runs) + " (warmup " + str(warmup) + ")"
+if capture("hyperfine --help 2>&1").contains("--shell=none") {
+    hf_shell_opt = "--shell=none "
+}
+
+shell("mkdir -p " + shq(results_dir))
+
+known = known_shells()
+detected = detect_shells(root)
+only_raw = trim(env("ARENA_ONLY"))
+filtered = []
+shells = filter_shells(detected, only_raw, filtered)
+
+bench_defs = [
+    {"id": "startup", "title": "Interpreter startup", "description": "Launch the interpreter, parse an empty script, and exit. This isolates process and language-startup cost.", "workload": "empty script", "stem": "benchmarks/empty"},
+    {"id": "arith", "title": "Integer arithmetic", "description": "Run a linear congruential generator for 10,000 iterations with 64-bit-safe modular arithmetic.", "workload": "10,000 iterations", "stem": "benchmarks/arith"},
+    {"id": "strings", "title": "String building", "description": "Append \"blood\" to a string 10,000 times, accumulate the byte length, and reset at 500 bytes.", "workload": "10,000 appends", "stem": "benchmarks/strings"},
+    {"id": "functions", "title": "Function calls", "description": "Advance the same LCG with 5,000 calls to a user-defined function.", "workload": "5,000 calls", "stem": "benchmarks/func"}
+]
+
+bench_filter = trim(env("ARENA_BENCH"))
+benches = filter_benches(bench_defs, bench_filter)
+
+if len(shells) == 0 {
+    say "error: no supported shells were found"
+    say "install at least one of: ksh, zsh, fish, elvish, blood, nu, bash, dash"
+    exit(1)
+}
+if len(benches) == 0 {
+    say "error: no benchmarks selected"
+    exit(1)
+}
+
+say "  shells:    "
+for s in shells {
+    say "    " + s.label + "  " + s.exe
+}
+if len(filtered) > 0 {
+    say "  filtered:  "
+    for f in filtered {
+        say "    " + f.label + "  (" + f.reason + ")"
+    }
+}
+
+bench_results = []
+for b in benches {
+    bench_results.append(run_benchmark(b, shells, root, results_dir, runs, warmup))
+}
+
+missing = missing_shells(known, detected)
+generated_at = trim(capture("date -u +%Y-%m-%dT%H:%M:%SZ"))
+host = trim(capture("hostname"))
+platform = trim(capture("uname -srm"))
+cwd = trim(capture("pwd"))
+hyperfine_version = first_line(capture("hyperfine --version"))
+blood_shell = shell_by_key(shells, "blood")
+blood_version = ""
+if blood_shell != none {
+    blood_version = version_of(blood_shell.exe, blood_shell.vcmd)
+}
+
+meta = "{"
+meta = meta + "\"generatedAt\":" + jstr(generated_at) + ","
+meta = meta + "\"host\":" + jstr(host) + ","
+meta = meta + "\"platform\":" + jstr(platform) + ","
+meta = meta + "\"cwd\":" + jstr(cwd) + ","
+meta = meta + "\"hyperfine\":" + jstr(hyperfine_version) + ","
+meta = meta + "\"runs\":" + str(runs) + ","
+meta = meta + "\"warmup\":" + str(warmup) + ","
+meta = meta + "\"quick\":" + str(quick) + ","
+meta = meta + "\"shellNone\":" + str(hf_shell_opt != "") + ","
+meta = meta + "\"bloodVersion\":" + jstr(blood_version) + ","
+meta = meta + "\"benchmarkCount\":" + str(len(bench_results))
+meta = meta + "}"
+
+data = "{"
+data = data + "\"meta\":" + meta + ","
+data = data + "\"shells\":" + json_shells(shells) + ","
+data = data + "\"known\":" + json_known(known) + ","
+data = data + "\"missing\":" + json_marks(missing) + ","
+data = data + "\"filtered\":" + json_marks(filtered) + ","
+data = data + "\"benchmarks\":" + json_benchmarks(bench_results)
+data = data + "}"
+
+template = read_file(root + "/lib/report.html")
+if template == none {
+    say "error: cannot read " + root + "/lib/report.html"
+    exit(1)
+}
+
+html = template.replace("/*__ARENA_DATA__*/", data)
+if not write_file(report_path, html) {
+    say "error: cannot write " + report_path
+    exit(1)
+}
+write_file(data_path, data)
+
+say ""
+say "done"
+say "  report: " + report_path
+say "  data:   " + data_path
