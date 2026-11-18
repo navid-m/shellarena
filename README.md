@@ -1,6 +1,6 @@
 # shellarena
 
-A reproducible cross-shell performance suite written in Blood. It runs the same
+A reproducible cross-shell performance suite written in [Blood](https://github.com/navid-m/blood). It runs the same
 small programs through every installed shell, measures them with
 [hyperfine](https://github.com/sharkdp/hyperfine), checks that they all produce
 the same checksum, and generates a self-contained HTML report with rankings,
