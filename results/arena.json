@@ -1,733 +1,620 @@
-{"meta":{"generatedAt":"2026-11-21T13:29:26Z","host":"Resonance","platform":"Linux 6.14.0-37-generic x86_64","cwd":"/home/navid/Desktop/projects/shellarena","hyperfine":"hyperfine 1.18.0","runs":8,"warmup":2,"quick":false,"shellNone":true,"bloodVersion":"blood v0.1.4 ded2c46","benchmarkCount":4},"shells":[{"key":"ksh","label":"ksh","exe":"/usr/bin/ksh93","flags":[],"ext":"ksh","color":"#f0a45b","version":"version         sh (AT&T Research) 93u+m/1.0.8 2024-01-01","installed":true},{"key":"elvish","label":"elvish","exe":"/usr/bin/elvish","flags":["-norc"],"ext":"elv","color":"#c792ea","version":"0.20.1+Ubuntu-1ubuntu0.24.04.3","installed":true},{"key":"blood","label":"blood","exe":"./../blood/blood","flags":[],"ext":"bx","color":"#ff3b5c","version":"blood v0.1.4 ded2c46","installed":true},{"key":"nushell","label":"nushell","exe":"/usr/bin/nu","flags":["--no-config-file"],"ext":"nu","color":"#5fb3c9","version":"0.117.0","installed":true},{"key":"bash","label":"bash","exe":"/usr/bin/bash","flags":[],"ext":"bash","color":"#6ee7a8","version":"GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)","installed":true},{"key":"dash","label":"dash","exe":"/usr/bin/dash","flags":[],"ext":"dash","color":"#f4d35e","version":"","installed":true}],"known":[{"key":"ksh","label":"ksh","color":"#f0a45b"},{"key":"zsh","label":"zsh","color":"#8fd46d"},{"key":"fish","label":"fish","color":"#8aa6ff"},{"key":"elvish","label":"elvish","color":"#c792ea"},{"key":"blood","label":"blood","color":"#ff3b5c"},{"key":"nushell","label":"nushell","color":"#5fb3c9"},{"key":"bash","label":"bash","color":"#6ee7a8"},{"key":"dash","label":"dash","color":"#f4d35e"}],"missing":[{"key":"zsh","label":"zsh","color":"#8fd46d","reason":"not found on PATH"},{"key":"fish","label":"fish","color":"#8aa6ff","reason":"not found on PATH"}],"filtered":[],"benchmarks":[{"id":"startup","title":"Interpreter startup","description":"Launch the interpreter, parse an empty script, and exit. This isolates process and language-startup cost.","workload":"empty script","commands":{"ksh":"'/usr/bin/ksh93' './benchmarks/empty.ksh'","elvish":"'/usr/bin/elvish' '-norc' './benchmarks/empty.elv'","blood":"'./../blood/blood' './benchmarks/empty.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/empty.nu'","bash":"'/usr/bin/bash' './benchmarks/empty.bash'","dash":"'/usr/bin/dash' './benchmarks/empty.dash'"},"checksums":{"bash":"","nushell":"","ksh":"","elvish":"","blood":"","dash":""},"validation":{"bash":"skipped","nushell":"skipped","ksh":"skipped","elvish":"skipped","blood":"skipped","dash":"skipped"},"error":"","results":{
-  "results": [
+{
+  "meta": {
+    "generatedAt": "2026-11-21T13:29:26Z",
+    "host": "Resonance",
+    "platform": "Linux 6.14.0-37-generic x86_64",
+    "cwd": "/shellarena",
+    "hyperfine": "hyperfine 1.18.0",
+    "runs": 8,
+    "warmup": 2,
+    "quick": false,
+    "shellNone": true,
+    "bloodVersion": "blood v0.1.4 ded2c46",
+    "benchmarkCount": 4
+  },
+  "shells": [
     {
-      "command": "ksh",
-      "mean": 0.0009934741250000002,
-      "stddev": 0.0000486652756209996,
-      "median": 0.0009746845000000001,
-      "user": 0.000113625,
-      "system": 0.00081625,
-      "min": 0.000953128,
-      "max": 0.001075762,
-      "times": [
-        0.000977114,
-        0.0009722550000000001,
-        0.001075762,
-        0.000968037,
-        0.0009811820000000001,
-        0.000953128,
-        0.001065413,
-        0.0009549020000000001
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "key": "ksh",
+      "label": "ksh",
+      "exe": "/usr/bin/ksh93",
+      "flags": [],
+      "ext": "ksh",
+      "color": "#f0a45b",
+      "version": "version         sh (AT&T Research) 93u+m/1.0.8 2024-01-01",
+      "installed": true
     },
     {
-      "command": "elvish",
-      "mean": 0.0038523587500000006,
-      "stddev": 0.00016614436760991924,
-      "median": 0.003824796,
-      "user": 0.001210875,
-      "system": 0.0035656250000000002,
-      "min": 0.003661465,
-      "max": 0.00416214,
-      "times": [
-        0.0037810920000000002,
-        0.0036875140000000002,
-        0.003794969,
-        0.003661465,
-        0.00416214,
-        0.003854623,
-        0.003866356,
-        0.004010711
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "key": "elvish",
+      "label": "elvish",
+      "exe": "/usr/bin/elvish",
+      "flags": ["-norc"],
+      "ext": "elv",
+      "color": "#c792ea",
+      "version": "0.20.1+Ubuntu-1ubuntu0.24.04.3",
+      "installed": true
     },
     {
-      "command": "blood",
-      "mean": 0.000470521375,
-      "stddev": 0.00004318219326771989,
-      "median": 0.0004605335,
-      "user": 0.00036462499999999993,
-      "system": 0.0000515,
-      "min": 0.00042179500000000004,
-      "max": 0.000541452,
-      "times": [
-        0.000489624,
-        0.000541452,
-        0.00046109000000000005,
-        0.000520423,
-        0.00045997700000000003,
-        0.00042179500000000004,
-        0.00042965,
-        0.00044016000000000004
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "key": "blood",
+      "label": "blood",
+      "exe": "./../blood/blood",
+      "flags": [],
+      "ext": "bx",
+      "color": "#ff3b5c",
+      "version": "blood v0.1.4 ded2c46",
+      "installed": true
     },
     {
-      "command": "nushell",
-      "mean": 0.011671477625,
-      "stddev": 0.0001707494378965334,
-      "median": 0.011660458000000002,
-      "user": 0.004817875,
-      "system": 0.006792249999999999,
-      "min": 0.011457916,
-      "max": 0.011999489,
-      "times": [
-        0.011999489,
-        0.01180025,
-        0.011457916,
-        0.011655654000000001,
-        0.011530976,
-        0.011665262000000001,
-        0.011556905000000001,
-        0.011705369
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "key": "nushell",
+      "label": "nushell",
+      "exe": "/usr/bin/nu",
+      "flags": ["--no-config-file"],
+      "ext": "nu",
+      "color": "#5fb3c9",
+      "version": "0.117.0",
+      "installed": true
     },
     {
-      "command": "bash",
-      "mean": 0.000974328375,
-      "stddev": 0.00004866352094870448,
-      "median": 0.0009835310000000002,
-      "user": 0.000463,
-      "system": 0.00044987499999999997,
-      "min": 0.000862936,
-      "max": 0.001026758,
-      "times": [
-        0.001026758,
-        0.001006039,
-        0.0009684470000000001,
-        0.000988465,
-        0.0009857800000000001,
-        0.0009749200000000001,
-        0.000862936,
-        0.000981282
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "key": "bash",
+      "label": "bash",
+      "exe": "/usr/bin/bash",
+      "flags": [],
+      "ext": "bash",
+      "color": "#6ee7a8",
+      "version": "GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)",
+      "installed": true
     },
     {
-      "command": "dash",
-      "mean": 0.0005736696250000001,
-      "stddev": 0.00004871511797594988,
-      "median": 0.0005968740000000001,
-      "user": 0.000233625,
-      "system": 0.00026825,
-      "min": 0.000501176,
-      "max": 0.0006336590000000001,
-      "times": [
-        0.000542686,
-        0.000594565,
-        0.0006006960000000001,
-        0.000599183,
-        0.000606297,
-        0.000501176,
-        0.0006336590000000001,
-        0.000511095
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "key": "dash",
+      "label": "dash",
+      "exe": "/usr/bin/dash",
+      "flags": [],
+      "ext": "dash",
+      "color": "#f4d35e",
+      "version": "",
+      "installed": true
+    }
+  ],
+  "known": [
+    { "key": "ksh", "label": "ksh", "color": "#f0a45b" },
+    { "key": "zsh", "label": "zsh", "color": "#8fd46d" },
+    { "key": "fish", "label": "fish", "color": "#8aa6ff" },
+    { "key": "elvish", "label": "elvish", "color": "#c792ea" },
+    { "key": "blood", "label": "blood", "color": "#ff3b5c" },
+    { "key": "nushell", "label": "nushell", "color": "#5fb3c9" },
+    { "key": "bash", "label": "bash", "color": "#6ee7a8" },
+    { "key": "dash", "label": "dash", "color": "#f4d35e" }
+  ],
+  "missing": [
+    {
+      "key": "zsh",
+      "label": "zsh",
+      "color": "#8fd46d",
+      "reason": "not found on PATH"
+    },
+    {
+      "key": "fish",
+      "label": "fish",
+      "color": "#8aa6ff",
+      "reason": "not found on PATH"
+    }
+  ],
+  "filtered": [],
+  "benchmarks": [
+    {
+      "id": "startup",
+      "title": "Interpreter startup",
+      "description": "Launch the interpreter, parse an empty script, and exit. This isolates process and language-startup cost.",
+      "workload": "empty script",
+      "commands": {
+        "ksh": "'/usr/bin/ksh93' './benchmarks/empty.ksh'",
+        "elvish": "'/usr/bin/elvish' '-norc' './benchmarks/empty.elv'",
+        "blood": "'./../blood/blood' './benchmarks/empty.bx'",
+        "nushell": "'/usr/bin/nu' '--no-config-file' './benchmarks/empty.nu'",
+        "bash": "'/usr/bin/bash' './benchmarks/empty.bash'",
+        "dash": "'/usr/bin/dash' './benchmarks/empty.dash'"
+      },
+      "checksums": {
+        "bash": "",
+        "nushell": "",
+        "ksh": "",
+        "elvish": "",
+        "blood": "",
+        "dash": ""
+      },
+      "validation": {
+        "bash": "skipped",
+        "nushell": "skipped",
+        "ksh": "skipped",
+        "elvish": "skipped",
+        "blood": "skipped",
+        "dash": "skipped"
+      },
+      "error": "",
+      "results": {
+        "results": [
+          {
+            "command": "ksh",
+            "mean": 0.0009934741250000002,
+            "stddev": 0.0000486652756209996,
+            "median": 0.0009746845000000001,
+            "user": 0.000113625,
+            "system": 0.00081625,
+            "min": 0.000953128,
+            "max": 0.001075762,
+            "times": [
+              0.000977114, 0.0009722550000000001, 0.001075762, 0.000968037,
+              0.0009811820000000001, 0.000953128, 0.001065413,
+              0.0009549020000000001
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "elvish",
+            "mean": 0.0038523587500000006,
+            "stddev": 0.00016614436760991924,
+            "median": 0.003824796,
+            "user": 0.001210875,
+            "system": 0.0035656250000000002,
+            "min": 0.003661465,
+            "max": 0.00416214,
+            "times": [
+              0.0037810920000000002, 0.0036875140000000002, 0.003794969,
+              0.003661465, 0.00416214, 0.003854623, 0.003866356, 0.004010711
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "blood",
+            "mean": 0.000470521375,
+            "stddev": 0.00004318219326771989,
+            "median": 0.0004605335,
+            "user": 0.00036462499999999993,
+            "system": 0.0000515,
+            "min": 0.00042179500000000004,
+            "max": 0.000541452,
+            "times": [
+              0.000489624, 0.000541452, 0.00046109000000000005, 0.000520423,
+              0.00045997700000000003, 0.00042179500000000004, 0.00042965,
+              0.00044016000000000004
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "nushell",
+            "mean": 0.011671477625,
+            "stddev": 0.0001707494378965334,
+            "median": 0.011660458000000002,
+            "user": 0.004817875,
+            "system": 0.006792249999999999,
+            "min": 0.011457916,
+            "max": 0.011999489,
+            "times": [
+              0.011999489, 0.01180025, 0.011457916, 0.011655654000000001,
+              0.011530976, 0.011665262000000001, 0.011556905000000001,
+              0.011705369
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "bash",
+            "mean": 0.000974328375,
+            "stddev": 0.00004866352094870448,
+            "median": 0.0009835310000000002,
+            "user": 0.000463,
+            "system": 0.00044987499999999997,
+            "min": 0.000862936,
+            "max": 0.001026758,
+            "times": [
+              0.001026758, 0.001006039, 0.0009684470000000001, 0.000988465,
+              0.0009857800000000001, 0.0009749200000000001, 0.000862936,
+              0.000981282
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "dash",
+            "mean": 0.0005736696250000001,
+            "stddev": 0.00004871511797594988,
+            "median": 0.0005968740000000001,
+            "user": 0.000233625,
+            "system": 0.00026825,
+            "min": 0.000501176,
+            "max": 0.0006336590000000001,
+            "times": [
+              0.000542686, 0.000594565, 0.0006006960000000001, 0.000599183,
+              0.000606297, 0.000501176, 0.0006336590000000001, 0.000511095
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        ]
+      }
+    },
+    {
+      "id": "arith",
+      "title": "Integer arithmetic",
+      "description": "Run a linear congruential generator for 10,000 iterations with 64-bit-safe modular arithmetic.",
+      "workload": "10,000 iterations",
+      "commands": {
+        "ksh": "'/usr/bin/ksh93' './benchmarks/arith.ksh'",
+        "elvish": "'/usr/bin/elvish' '-norc' './benchmarks/arith.elv'",
+        "blood": "'./../blood/blood' './benchmarks/arith.bx'",
+        "nushell": "'/usr/bin/nu' '--no-config-file' './benchmarks/arith.nu'",
+        "bash": "'/usr/bin/bash' './benchmarks/arith.bash'",
+        "dash": "'/usr/bin/dash' './benchmarks/arith.dash'"
+      },
+      "checksums": {
+        "bash": "arith 1574320066",
+        "nushell": "arith 1574320066",
+        "ksh": "arith 1574320066",
+        "elvish": "arith 1574320066",
+        "blood": "arith 1574320066",
+        "dash": "arith 1574320066"
+      },
+      "validation": {
+        "bash": "ok",
+        "nushell": "ok",
+        "ksh": "ok",
+        "elvish": "ok",
+        "blood": "ok",
+        "dash": "ok"
+      },
+      "error": "",
+      "results": {
+        "results": [
+          {
+            "command": "ksh",
+            "mean": 0.012148109875,
+            "stddev": 0.0002508923932772987,
+            "median": 0.012077899,
+            "user": 0.011324499999999998,
+            "system": 0.0007405,
+            "min": 0.011902283000000001,
+            "max": 0.01261897,
+            "times": [
+              0.01261897, 0.012447053000000001, 0.011902283000000001,
+              0.012095722000000001, 0.012077178000000001, 0.012011522,
+              0.011953531, 0.01207862
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "elvish",
+            "mean": 1.306598554125,
+            "stddev": 0.02621275847466473,
+            "median": 1.3009571075,
+            "user": 0.893681875,
+            "system": 0.9387215,
+            "min": 1.288285487,
+            "max": 1.3700332400000002,
+            "times": [
+              1.292057738, 1.288285487, 1.294486278, 1.301899599, 1.300524098,
+              1.304111876, 1.3700332400000002, 1.301390117
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "blood",
+            "mean": 0.014015589375,
+            "stddev": 0.00012078228042454544,
+            "median": 0.014014304500000001,
+            "user": 0.012199,
+            "system": 0.0017381249999999999,
+            "min": 0.013788278000000001,
+            "max": 0.014165899000000001,
+            "times": [
+              0.014038085, 0.013961128000000001, 0.013995423000000002,
+              0.014165899000000001, 0.014033186000000001, 0.014164756,
+              0.013977960000000001, 0.013788278000000001
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "nushell",
+            "mean": 0.044165657875,
+            "stddev": 0.00043939786508761527,
+            "median": 0.0441887305,
+            "user": 0.036945375,
+            "system": 0.0071094999999999995,
+            "min": 0.043389636,
+            "max": 0.044826707,
+            "times": [
+              0.043898277, 0.044547825000000006, 0.043947351, 0.044826707,
+              0.044098379, 0.044338006000000006, 0.043389636,
+              0.044279082000000004
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "bash",
+            "mean": 0.039242854625000004,
+            "stddev": 0.0005351903366125094,
+            "median": 0.039282452,
+            "user": 0.038391375,
+            "system": 0.0007453750000000002,
+            "min": 0.038198175,
+            "max": 0.039932603000000004,
+            "times": [
+              0.039441996, 0.03894, 0.039932603000000004, 0.039545414,
+              0.039665904, 0.039095837, 0.039122908000000005, 0.038198175
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "dash",
+            "mean": 0.016391960125,
+            "stddev": 0.00038130340897334764,
+            "median": 0.016254321500000002,
+            "user": 0.015800875,
+            "system": 0.0004992499999999999,
+            "min": 0.015930754000000002,
+            "max": 0.016837063,
+            "times": [
+              0.016836632, 0.015930754000000002, 0.016095528,
+              0.016110587000000003, 0.016144682, 0.016363961, 0.016837063,
+              0.016816474
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        ]
+      }
+    },
+    {
+      "id": "strings",
+      "title": "String building",
+      "description": "Append \"blood\" to a string 10,000 times, accumulate the byte length, and reset at 500 bytes.",
+      "workload": "10,000 appends",
+      "commands": {
+        "ksh": "'/usr/bin/ksh93' './benchmarks/strings.ksh'",
+        "elvish": "'/usr/bin/elvish' '-norc' './benchmarks/strings.elv'",
+        "blood": "'./../blood/blood' './benchmarks/strings.bx'",
+        "nushell": "'/usr/bin/nu' '--no-config-file' './benchmarks/strings.nu'",
+        "bash": "'/usr/bin/bash' './benchmarks/strings.bash'",
+        "dash": "'/usr/bin/dash' './benchmarks/strings.dash'"
+      },
+      "checksums": {
+        "bash": "strings 2525000",
+        "nushell": "strings 2525000",
+        "ksh": "strings 2525000",
+        "elvish": "strings 2525000",
+        "blood": "strings 2525000",
+        "dash": "strings 2525000"
+      },
+      "validation": {
+        "bash": "ok",
+        "nushell": "ok",
+        "ksh": "ok",
+        "elvish": "ok",
+        "blood": "ok",
+        "dash": "ok"
+      },
+      "error": "",
+      "results": {
+        "results": [
+          {
+            "command": "ksh",
+            "mean": 0.036491471875,
+            "stddev": 0.0006806485445597224,
+            "median": 0.036449478,
+            "user": 0.035780624999999996,
+            "system": 0.0006217499999999999,
+            "min": 0.035753651000000004,
+            "max": 0.037411363,
+            "times": [
+              0.036447765, 0.035760964, 0.037073137, 0.036451191,
+              0.037215279000000004, 0.035753651000000004, 0.035818425,
+              0.037411363
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "elvish",
+            "mean": 1.3643390665000001,
+            "stddev": 0.05545056635878303,
+            "median": 1.351804374,
+            "user": 0.9467445000000001,
+            "system": 0.97523325,
+            "min": 1.322723711,
+            "max": 1.497483222,
+            "times": [
+              1.349539191, 1.356258499, 1.497483222, 1.329878097, 1.342360955,
+              1.3623993, 1.354069557, 1.322723711
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "blood",
+            "mean": 0.029084964749999997,
+            "stddev": 0.0003711486395386039,
+            "median": 0.029173730000000002,
+            "user": 0.02339125,
+            "system": 0.0055986249999999994,
+            "min": 0.028534706000000003,
+            "max": 0.029463458,
+            "times": [
+              0.029235783, 0.029407491, 0.029111677000000002,
+              0.028561448000000003, 0.029403494000000002, 0.028961661000000003,
+              0.028534706000000003, 0.029463458
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "nushell",
+            "mean": 0.05602008312500001,
+            "stddev": 0.0007675212840872776,
+            "median": 0.05583927700000001,
+            "user": 0.048312625,
+            "system": 0.007497,
+            "min": 0.05530062,
+            "max": 0.057576390000000005,
+            "times": [
+              0.055944758000000004, 0.05530062, 0.057576390000000005,
+              0.056123529000000005, 0.055733796, 0.055478309, 0.055372597,
+              0.056630666
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "bash",
+            "mean": 0.08745552125,
+            "stddev": 0.0007090319044410896,
+            "median": 0.08751489200000001,
+            "user": 0.086089875,
+            "system": 0.0012476249999999998,
+            "min": 0.086469659,
+            "max": 0.088598228,
+            "times": [
+              0.08751702600000001, 0.087703641, 0.08806332800000001,
+              0.08751275800000001, 0.086469659, 0.086604135, 0.087175395,
+              0.088598228
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "dash",
+            "mean": 0.026830633625000006,
+            "stddev": 0.0002999370862554523,
+            "median": 0.026919195,
+            "user": 0.026125750000000003,
+            "system": 0.000619,
+            "min": 0.026406046000000002,
+            "max": 0.027223605,
+            "times": [
+              0.026978178000000002, 0.026964972, 0.026409834, 0.02707911,
+              0.026873418000000003, 0.026406046000000002, 0.027223605,
+              0.026709906000000002
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        ]
+      }
+    },
+    {
+      "id": "functions",
+      "title": "Function calls",
+      "description": "Advance the same LCG with 5,000 calls to a user-defined function.",
+      "workload": "5,000 calls",
+      "commands": {
+        "ksh": "'/usr/bin/ksh93' './benchmarks/func.ksh'",
+        "elvish": "'/usr/bin/elvish' '-norc' './benchmarks/func.elv'",
+        "blood": "'./../blood/blood' './benchmarks/func.bx'",
+        "nushell": "'/usr/bin/nu' '--no-config-file' './benchmarks/func.nu'",
+        "bash": "'/usr/bin/bash' './benchmarks/func.bash'",
+        "dash": "'/usr/bin/dash' './benchmarks/func.dash'"
+      },
+      "checksums": {
+        "bash": "func 1581940221",
+        "nushell": "func 1581940221",
+        "ksh": "func 1581940221",
+        "elvish": "func 1581940221",
+        "blood": "func 1581940221",
+        "dash": "func 1581940221"
+      },
+      "validation": {
+        "bash": "ok",
+        "nushell": "ok",
+        "ksh": "ok",
+        "elvish": "ok",
+        "blood": "ok",
+        "dash": "ok"
+      },
+      "error": "",
+      "results": {
+        "results": [
+          {
+            "command": "ksh",
+            "mean": 0.013206050625,
+            "stddev": 0.00031070732736448667,
+            "median": 0.0130643285,
+            "user": 0.011773499999999998,
+            "system": 0.00135225,
+            "min": 0.01292688,
+            "max": 0.013777332000000002,
+            "times": [
+              0.013777332000000002, 0.01292688, 0.012995973000000001,
+              0.013030058, 0.013098599, 0.012936579, 0.013415583, 0.013467401
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "elvish",
+            "mean": 0.77396362975,
+            "stddev": 0.011170246448374999,
+            "median": 0.7696339110000001,
+            "user": 0.52870025,
+            "system": 0.551637875,
+            "min": 0.760751976,
+            "max": 0.7929519620000001,
+            "times": [
+              0.787820708, 0.7770063370000001, 0.7929519620000001,
+              0.7676855220000001, 0.7692866580000001, 0.760751976, 0.766224711,
+              0.769981164
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "blood",
+            "mean": 0.009930788625,
+            "stddev": 0.00031410606608184245,
+            "median": 0.0098361155,
+            "user": 0.007615374999999999,
+            "system": 0.002234625,
+            "min": 0.009557895,
+            "max": 0.010564695,
+            "times": [
+              0.009829513, 0.010564695, 0.009557895, 0.010054863, 0.010121289,
+              0.009685408000000001, 0.009842718, 0.009789928
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "nushell",
+            "mean": 0.0372354705,
+            "stddev": 0.0002791629005524498,
+            "median": 0.03725606150000001,
+            "user": 0.030052749999999996,
+            "system": 0.007100499999999999,
+            "min": 0.036915782,
+            "max": 0.037676162,
+            "times": [
+              0.037444922000000005, 0.037676162, 0.037414183000000004,
+              0.037358497000000004, 0.036956449, 0.036964143000000005,
+              0.036915782, 0.037153626
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "bash",
+            "mean": 1.7579854400000001,
+            "stddev": 0.0166750681552148,
+            "median": 1.7580421775000001,
+            "user": 1.0331685,
+            "system": 0.9094528749999999,
+            "min": 1.735887672,
+            "max": 1.7820934190000002,
+            "times": [
+              1.779641127, 1.76063469, 1.7820934190000002, 1.735887672,
+              1.7400284940000001, 1.75621402, 1.759870335, 1.749513763
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          {
+            "command": "dash",
+            "mean": 0.9633828980000001,
+            "stddev": 0.00891462233899198,
+            "median": 0.9617828725,
+            "user": 0.5162618750000001,
+            "system": 0.545933125,
+            "min": 0.954317441,
+            "max": 0.979119468,
+            "times": [
+              0.973318847, 0.9574611300000001, 0.9643720920000001,
+              0.9644433050000001, 0.959193653, 0.979119468, 0.954317441,
+              0.954837248
+            ],
+            "exit_codes": [0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        ]
+      }
     }
   ]
-}},{"id":"arith","title":"Integer arithmetic","description":"Run a linear congruential generator for 10,000 iterations with 64-bit-safe modular arithmetic.","workload":"10,000 iterations","commands":{"ksh":"'/usr/bin/ksh93' './benchmarks/arith.ksh'","elvish":"'/usr/bin/elvish' '-norc' './benchmarks/arith.elv'","blood":"'./../blood/blood' './benchmarks/arith.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/arith.nu'","bash":"'/usr/bin/bash' './benchmarks/arith.bash'","dash":"'/usr/bin/dash' './benchmarks/arith.dash'"},"checksums":{"bash":"arith 1574320066","nushell":"arith 1574320066","ksh":"arith 1574320066","elvish":"arith 1574320066","blood":"arith 1574320066","dash":"arith 1574320066"},"validation":{"bash":"ok","nushell":"ok","ksh":"ok","elvish":"ok","blood":"ok","dash":"ok"},"error":"","results":{
-  "results": [
-    {
-      "command": "ksh",
-      "mean": 0.012148109875,
-      "stddev": 0.0002508923932772987,
-      "median": 0.012077899,
-      "user": 0.011324499999999998,
-      "system": 0.0007405,
-      "min": 0.011902283000000001,
-      "max": 0.01261897,
-      "times": [
-        0.01261897,
-        0.012447053000000001,
-        0.011902283000000001,
-        0.012095722000000001,
-        0.012077178000000001,
-        0.012011522,
-        0.011953531,
-        0.01207862
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "elvish",
-      "mean": 1.306598554125,
-      "stddev": 0.02621275847466473,
-      "median": 1.3009571075,
-      "user": 0.893681875,
-      "system": 0.9387215,
-      "min": 1.288285487,
-      "max": 1.3700332400000002,
-      "times": [
-        1.292057738,
-        1.288285487,
-        1.294486278,
-        1.301899599,
-        1.300524098,
-        1.304111876,
-        1.3700332400000002,
-        1.301390117
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "blood",
-      "mean": 0.014015589375,
-      "stddev": 0.00012078228042454544,
-      "median": 0.014014304500000001,
-      "user": 0.012199,
-      "system": 0.0017381249999999999,
-      "min": 0.013788278000000001,
-      "max": 0.014165899000000001,
-      "times": [
-        0.014038085,
-        0.013961128000000001,
-        0.013995423000000002,
-        0.014165899000000001,
-        0.014033186000000001,
-        0.014164756,
-        0.013977960000000001,
-        0.013788278000000001
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "nushell",
-      "mean": 0.044165657875,
-      "stddev": 0.00043939786508761527,
-      "median": 0.0441887305,
-      "user": 0.036945375,
-      "system": 0.0071094999999999995,
-      "min": 0.043389636,
-      "max": 0.044826707,
-      "times": [
-        0.043898277,
-        0.044547825000000006,
-        0.043947351,
-        0.044826707,
-        0.044098379,
-        0.044338006000000006,
-        0.043389636,
-        0.044279082000000004
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "bash",
-      "mean": 0.039242854625000004,
-      "stddev": 0.0005351903366125094,
-      "median": 0.039282452,
-      "user": 0.038391375,
-      "system": 0.0007453750000000002,
-      "min": 0.038198175,
-      "max": 0.039932603000000004,
-      "times": [
-        0.039441996,
-        0.03894,
-        0.039932603000000004,
-        0.039545414,
-        0.039665904,
-        0.039095837,
-        0.039122908000000005,
-        0.038198175
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "dash",
-      "mean": 0.016391960125,
-      "stddev": 0.00038130340897334764,
-      "median": 0.016254321500000002,
-      "user": 0.015800875,
-      "system": 0.0004992499999999999,
-      "min": 0.015930754000000002,
-      "max": 0.016837063,
-      "times": [
-        0.016836632,
-        0.015930754000000002,
-        0.016095528,
-        0.016110587000000003,
-        0.016144682,
-        0.016363961,
-        0.016837063,
-        0.016816474
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    }
-  ]
-}},{"id":"strings","title":"String building","description":"Append \"blood\" to a string 10,000 times, accumulate the byte length, and reset at 500 bytes.","workload":"10,000 appends","commands":{"ksh":"'/usr/bin/ksh93' './benchmarks/strings.ksh'","elvish":"'/usr/bin/elvish' '-norc' './benchmarks/strings.elv'","blood":"'./../blood/blood' './benchmarks/strings.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/strings.nu'","bash":"'/usr/bin/bash' './benchmarks/strings.bash'","dash":"'/usr/bin/dash' './benchmarks/strings.dash'"},"checksums":{"bash":"strings 2525000","nushell":"strings 2525000","ksh":"strings 2525000","elvish":"strings 2525000","blood":"strings 2525000","dash":"strings 2525000"},"validation":{"bash":"ok","nushell":"ok","ksh":"ok","elvish":"ok","blood":"ok","dash":"ok"},"error":"","results":{
-  "results": [
-    {
-      "command": "ksh",
-      "mean": 0.036491471875,
-      "stddev": 0.0006806485445597224,
-      "median": 0.036449478,
-      "user": 0.035780624999999996,
-      "system": 0.0006217499999999999,
-      "min": 0.035753651000000004,
-      "max": 0.037411363,
-      "times": [
-        0.036447765,
-        0.035760964,
-        0.037073137,
-        0.036451191,
-        0.037215279000000004,
-        0.035753651000000004,
-        0.035818425,
-        0.037411363
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "elvish",
-      "mean": 1.3643390665000001,
-      "stddev": 0.05545056635878303,
-      "median": 1.351804374,
-      "user": 0.9467445000000001,
-      "system": 0.97523325,
-      "min": 1.322723711,
-      "max": 1.497483222,
-      "times": [
-        1.349539191,
-        1.356258499,
-        1.497483222,
-        1.329878097,
-        1.342360955,
-        1.3623993,
-        1.354069557,
-        1.322723711
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "blood",
-      "mean": 0.029084964749999997,
-      "stddev": 0.0003711486395386039,
-      "median": 0.029173730000000002,
-      "user": 0.02339125,
-      "system": 0.0055986249999999994,
-      "min": 0.028534706000000003,
-      "max": 0.029463458,
-      "times": [
-        0.029235783,
-        0.029407491,
-        0.029111677000000002,
-        0.028561448000000003,
-        0.029403494000000002,
-        0.028961661000000003,
-        0.028534706000000003,
-        0.029463458
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "nushell",
-      "mean": 0.05602008312500001,
-      "stddev": 0.0007675212840872776,
-      "median": 0.05583927700000001,
-      "user": 0.048312625,
-      "system": 0.007497,
-      "min": 0.05530062,
-      "max": 0.057576390000000005,
-      "times": [
-        0.055944758000000004,
-        0.05530062,
-        0.057576390000000005,
-        0.056123529000000005,
-        0.055733796,
-        0.055478309,
-        0.055372597,
-        0.056630666
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "bash",
-      "mean": 0.08745552125,
-      "stddev": 0.0007090319044410896,
-      "median": 0.08751489200000001,
-      "user": 0.086089875,
-      "system": 0.0012476249999999998,
-      "min": 0.086469659,
-      "max": 0.088598228,
-      "times": [
-        0.08751702600000001,
-        0.087703641,
-        0.08806332800000001,
-        0.08751275800000001,
-        0.086469659,
-        0.086604135,
-        0.087175395,
-        0.088598228
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "dash",
-      "mean": 0.026830633625000006,
-      "stddev": 0.0002999370862554523,
-      "median": 0.026919195,
-      "user": 0.026125750000000003,
-      "system": 0.000619,
-      "min": 0.026406046000000002,
-      "max": 0.027223605,
-      "times": [
-        0.026978178000000002,
-        0.026964972,
-        0.026409834,
-        0.02707911,
-        0.026873418000000003,
-        0.026406046000000002,
-        0.027223605,
-        0.026709906000000002
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    }
-  ]
-}},{"id":"functions","title":"Function calls","description":"Advance the same LCG with 5,000 calls to a user-defined function.","workload":"5,000 calls","commands":{"ksh":"'/usr/bin/ksh93' './benchmarks/func.ksh'","elvish":"'/usr/bin/elvish' '-norc' './benchmarks/func.elv'","blood":"'./../blood/blood' './benchmarks/func.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/func.nu'","bash":"'/usr/bin/bash' './benchmarks/func.bash'","dash":"'/usr/bin/dash' './benchmarks/func.dash'"},"checksums":{"bash":"func 1581940221","nushell":"func 1581940221","ksh":"func 1581940221","elvish":"func 1581940221","blood":"func 1581940221","dash":"func 1581940221"},"validation":{"bash":"ok","nushell":"ok","ksh":"ok","elvish":"ok","blood":"ok","dash":"ok"},"error":"","results":{
-  "results": [
-    {
-      "command": "ksh",
-      "mean": 0.013206050625,
-      "stddev": 0.00031070732736448667,
-      "median": 0.0130643285,
-      "user": 0.011773499999999998,
-      "system": 0.00135225,
-      "min": 0.01292688,
-      "max": 0.013777332000000002,
-      "times": [
-        0.013777332000000002,
-        0.01292688,
-        0.012995973000000001,
-        0.013030058,
-        0.013098599,
-        0.012936579,
-        0.013415583,
-        0.013467401
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "elvish",
-      "mean": 0.77396362975,
-      "stddev": 0.011170246448374999,
-      "median": 0.7696339110000001,
-      "user": 0.52870025,
-      "system": 0.551637875,
-      "min": 0.760751976,
-      "max": 0.7929519620000001,
-      "times": [
-        0.787820708,
-        0.7770063370000001,
-        0.7929519620000001,
-        0.7676855220000001,
-        0.7692866580000001,
-        0.760751976,
-        0.766224711,
-        0.769981164
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "blood",
-      "mean": 0.009930788625,
-      "stddev": 0.00031410606608184245,
-      "median": 0.0098361155,
-      "user": 0.007615374999999999,
-      "system": 0.002234625,
-      "min": 0.009557895,
-      "max": 0.010564695,
-      "times": [
-        0.009829513,
-        0.010564695,
-        0.009557895,
-        0.010054863,
-        0.010121289,
-        0.009685408000000001,
-        0.009842718,
-        0.009789928
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "nushell",
-      "mean": 0.0372354705,
-      "stddev": 0.0002791629005524498,
-      "median": 0.03725606150000001,
-      "user": 0.030052749999999996,
-      "system": 0.007100499999999999,
-      "min": 0.036915782,
-      "max": 0.037676162,
-      "times": [
-        0.037444922000000005,
-        0.037676162,
-        0.037414183000000004,
-        0.037358497000000004,
-        0.036956449,
-        0.036964143000000005,
-        0.036915782,
-        0.037153626
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "bash",
-      "mean": 1.7579854400000001,
-      "stddev": 0.0166750681552148,
-      "median": 1.7580421775000001,
-      "user": 1.0331685,
-      "system": 0.9094528749999999,
-      "min": 1.735887672,
-      "max": 1.7820934190000002,
-      "times": [
-        1.779641127,
-        1.76063469,
-        1.7820934190000002,
-        1.735887672,
-        1.7400284940000001,
-        1.75621402,
-        1.759870335,
-        1.749513763
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "command": "dash",
-      "mean": 0.9633828980000001,
-      "stddev": 0.00891462233899198,
-      "median": 0.9617828725,
-      "user": 0.5162618750000001,
-      "system": 0.545933125,
-      "min": 0.954317441,
-      "max": 0.979119468,
-      "times": [
-        0.973318847,
-        0.9574611300000001,
-        0.9643720920000001,
-        0.9644433050000001,
-        0.959193653,
-        0.979119468,
-        0.954317441,
-        0.954837248
-      ],
-      "exit_codes": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    }
-  ]
-}}]}
+}
