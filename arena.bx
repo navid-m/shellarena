@@ -124,6 +124,12 @@ fn add_detected(detected, key, label, exe, flags, ext, color, vcmd) {
 fn detect_shells(root) {
     var detected = []
 
+    var ksh = which("ksh93")
+    if ksh == "" {
+        ksh = which("ksh")
+    }
+    add_detected(detected, "ksh", "ksh", ksh, [], "ksh", "#f0a45b", "--version")
+
     add_detected(detected, "zsh", "zsh", which("zsh"), ["-f"], "zsh", "#8fd46d", "--version")
     add_detected(detected, "fish", "fish", which("fish"), ["--no-config"], "fish", "#8aa6ff", "--version")
     add_detected(detected, "elvish", "elvish", which("elvish"), ["-norc"], "elv", "#c792ea", "-version")
@@ -151,6 +157,7 @@ fn detect_shells(root) {
 
 fn known_shells() {
     return [
+        { "key": "ksh", "label": "ksh", "color": "#f0a45b" },
         { "key": "zsh", "label": "zsh", "color": "#8fd46d" },
         { "key": "fish", "label": "fish", "color": "#8aa6ff" },
         { "key": "elvish", "label": "elvish", "color": "#c792ea" },
@@ -434,7 +441,7 @@ fn usage() {
     say "  BLOOD_BIN     path to the Blood binary"
     say "  ARENA_RUNS    hyperfine runs per command (default 8)"
     say "  ARENA_WARMUP  hyperfine warmup runs (default 2)"
-    say "  ARENA_ONLY    comma-separated shells (zsh,fish,elvish,blood,nushell,bash,dash)"
+    say "  ARENA_ONLY    comma-separated shells (ksh,zsh,fish,elvish,blood,nushell,bash,dash)"
     say "  ARENA_BENCH   comma-separated benchmarks (startup,arith,strings,functions)"
 }
 
@@ -492,7 +499,7 @@ var benches = filter_benches(bench_defs, bench_filter)
 
 if len(shells) == 0 {
     say "error: no supported shells were found"
-    say "install at least one of: zsh, fish, elvish, blood, nu, bash, dash"
+    say "install at least one of: ksh, zsh, fish, elvish, blood, nu, bash, dash"
     exit(1)
 }
 if len(benches) == 0 {
