@@ -1,10 +1,10 @@
 #!/usr/bin/env blood
 # shellarena: string building
 
-rounds = 10000
-i = 0
-checksum = 0
-s = ""
+var rounds = 10000
+var i = 0
+var checksum = 0
+var s = ""
 
 while i < rounds {
     s = s + "blood"

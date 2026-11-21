@@ -1,0 +1,1695 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shell Arena</title>
+    <style>
+      :root {
+        --bg: #0d0d0d;
+        --fg: #d4d4d4;
+        --muted: #8a8a8a;
+        --dim: #5e5e5e;
+        --line: #242424;
+        --line-2: #333333;
+        --bar: #767676;
+        --bar-fast: #c8c8c8;
+        --accent: #b46a6a;
+        --warn: #b39a6a;
+        --good: #84a084;
+        --mono:
+          ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas,
+          monospace;
+        --sans:
+          system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      a {
+        color: var(--fg);
+        text-decoration: underline;
+        text-decoration-color: #444;
+        text-underline-offset: 3px;
+      }
+
+      a:hover {
+        text-decoration-color: var(--fg);
+      }
+
+      header {
+        padding: 54px 0 30px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        margin: 8px 0 4px;
+      }
+
+      .tagline {
+        margin: 0 0 20px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: 0.73rem;
+        line-height: 1.85;
+        color: var(--muted);
+      }
+
+      .meta .dim {
+        color: var(--dim);
+      }
+
+      section {
+        padding: 30px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .sectionhead {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 6px;
+      }
+
+      h2 {
+        margin: 0;
+        font-family: var(--mono);
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--fg);
+      }
+
+      .hash {
+        color: var(--dim);
+        margin-right: 0.45em;
+        font-weight: 400;
+      }
+
+      .note {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 0.79rem;
+      }
+
+      .note code,
+      .muted code,
+      .method code {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--fg);
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+      .dim {
+        color: var(--dim);
+      }
+
+      .linkbtn {
+        appearance: none;
+        background: none;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        cursor: pointer;
+        text-decoration: underline;
+        text-decoration-color: #3a3a3a;
+        text-underline-offset: 3px;
+      }
+
+      .linkbtn:hover {
+        color: var(--fg);
+        text-decoration-color: var(--fg);
+      }
+
+      /* bars */
+
+      .bars {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        margin-top: 14px;
+      }
+
+      .bar-row {
+        display: grid;
+        grid-template-columns: 1.6rem 7.5rem minmax(0, 1fr) 11rem;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .rank {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--dim);
+        text-align: right;
+      }
+
+      .shell-name {
+        font-size: 0.86rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .track {
+        position: relative;
+        height: 11px;
+        background: transparent;
+        border: 0;
+        overflow: hidden;
+      }
+
+      .fill {
+        height: 100%;
+        background: var(--bar);
+      }
+
+      .fill.fast {
+        background: var(--bar-fast);
+      }
+
+      .value {
+        font-family: var(--mono);
+        font-size: 0.73rem;
+        line-height: 1.4;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .value b {
+        font-weight: 500;
+        color: var(--fg);
+      }
+
+      .value span {
+        color: var(--muted);
+        margin-left: 7px;
+      }
+
+      /* tables */
+
+      .tablewrap {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.81rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 7px 9px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+
+      th {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      tbody tr:hover {
+        background: #131313;
+      }
+
+      td.num,
+      .num {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        white-space: nowrap;
+      }
+
+      td.num b {
+        font-weight: 500;
+      }
+
+      td.num span {
+        color: var(--muted);
+        margin-left: 6px;
+      }
+
+      .matrix td {
+        font-family: var(--mono);
+        font-size: 0.73rem;
+      }
+
+      .matrix .cell-main {
+        display: block;
+        font-weight: 500;
+      }
+      .matrix .cell-sub {
+        display: block;
+        color: var(--muted);
+        font-size: 0.64rem;
+      }
+      .matrix th.rowhead {
+        font-family: var(--sans);
+        font-size: 0.83rem;
+        font-weight: 500;
+        color: var(--fg);
+        white-space: nowrap;
+      }
+
+      .matrix .best {
+        outline: 1px solid #4d4d4d;
+        outline-offset: -1px;
+      }
+
+      /* head-to-head */
+
+      .h2h-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        align-items: center;
+        margin: 10px 0 16px;
+        font-size: 0.83rem;
+        color: var(--muted);
+      }
+
+      .h2h-controls label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      select {
+        appearance: auto;
+        background: #131313;
+        color: var(--fg);
+        border: 1px solid var(--line-2);
+        border-radius: 2px;
+        padding: 5px 8px;
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        cursor: pointer;
+      }
+
+      select:focus {
+        outline: 1px solid #666;
+        outline-offset: 1px;
+      }
+
+      .verdict {
+        margin: 0 0 14px;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--fg);
+      }
+
+      .verdict .prompt {
+        color: var(--dim);
+        margin-right: 8px;
+      }
+
+      .verdict .win {
+        color: var(--accent);
+      }
+
+      /* benchmark blocks */
+
+      .bench {
+        padding: 30px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .bench h2 {
+        font-size: 0.92rem;
+      }
+
+      .workload {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .benchfoot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 18px;
+        margin-top: 12px;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .benchfoot .ok {
+        color: var(--good);
+      }
+      .benchfoot .warn {
+        color: var(--warn);
+      }
+      .benchfoot .bad {
+        color: var(--accent);
+      }
+
+      details {
+        margin: 0;
+      }
+      summary {
+        cursor: pointer;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+      }
+      summary:hover {
+        color: var(--fg);
+      }
+
+      details .tablewrap {
+        margin-top: 10px;
+      }
+
+      details table {
+        font-size: 0.72rem;
+      }
+      details td {
+        padding: 5px 8px;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.73rem;
+        color: #c4c4c4;
+      }
+
+      /* shell table */
+
+      .shellpath,
+      .shellversion {
+        display: block;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .shellpath {
+        max-width: 300px;
+      }
+      .shellversion {
+        max-width: 360px;
+      }
+
+      .rankcell {
+        font-family: var(--mono);
+        font-size: 0.73rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .untested {
+        margin-top: 12px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      /* method */
+
+      .method {
+        display: grid;
+        grid-template-columns: 7rem minmax(0, 1fr);
+        gap: 6px 16px;
+        margin: 12px 0 16px;
+        font-size: 0.8rem;
+      }
+
+      .method dt {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+
+      .method dd {
+        margin: 0;
+        color: var(--fg);
+      }
+
+      .method dd.muted {
+        color: var(--muted);
+      }
+
+      .method-note {
+        margin: 16px 0 0;
+        font-size: 0.76rem;
+        color: var(--muted);
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px 0 52px;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--dim);
+      }
+
+      .empty {
+        color: var(--muted);
+        font-size: 0.82rem;
+        padding: 8px 0;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          padding-top: 38px;
+        }
+        section {
+          padding: 24px 0;
+        }
+        .bar-row {
+          grid-template-columns: 1.4rem 6rem minmax(0, 1fr);
+          gap: 8px;
+        }
+        .value {
+          grid-column: 2 / -1;
+          text-align: left;
+          margin-top: -4px;
+        }
+        .method {
+          grid-template-columns: 5.5rem minmax(0, 1fr);
+        }
+        footer {
+          flex-direction: column;
+          gap: 4px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Shell Arena</h1>
+        <p class="tagline">
+          Cross-shell benchmark. Median wall time; lower is better.
+        </p>
+        <div class="meta" id="meta"></div>
+      </header>
+
+      <main>
+        <section>
+          <div class="sectionhead">
+            <h2><span class="hash">##</span>overall</h2>
+            <button class="linkbtn" id="scale-toggle" type="button">
+              scale: log
+            </button>
+          </div>
+          <p class="note">
+            Geometric mean slowdown vs. the fastest shell. Shorter bar = less
+            time.
+          </p>
+          <div class="bars" id="overall-bars"></div>
+        </section>
+
+        <section>
+          <div class="sectionhead">
+            <h2><span class="hash">##</span>relative time</h2>
+          </div>
+          <p class="note">
+            Median time and ratio to the fastest shell for each benchmark.
+          </p>
+          <div class="tablewrap">
+            <table class="matrix" id="matrix"></table>
+          </div>
+        </section>
+
+        <div id="benchmarks"></div>
+
+        <section>
+          <div class="sectionhead">
+            <h2><span class="hash">##</span>head-to-head</h2>
+          </div>
+          <div class="h2h-controls">
+            <label
+              >compare
+              <select id="h2h-a"></select
+            ></label>
+            <label
+              >with
+              <select id="h2h-b"></select
+            ></label>
+          </div>
+          <div class="verdict" id="h2h-verdict"></div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>benchmark</th>
+                  <th id="h2h-col-a">a</th>
+                  <th id="h2h-col-b">b</th>
+                  <th>result</th>
+                </tr>
+              </thead>
+              <tbody id="h2h-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <div class="sectionhead">
+            <h2><span class="hash">##</span>shells</h2>
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>rank</th>
+                  <th>shell</th>
+                  <th>path</th>
+                  <th>version</th>
+                  <th>benchmarks</th>
+                </tr>
+              </thead>
+              <tbody id="shell-rows"></tbody>
+            </table>
+          </div>
+          <div class="untested" id="not-tested"></div>
+        </section>
+
+        <section>
+          <div class="sectionhead">
+            <h2><span class="hash">##</span>method</h2>
+          </div>
+          <dl class="method" id="method"></dl>
+          <div id="command-details"></div>
+          <p class="method-note">
+            Microbenchmarks. Results are machine-specific.
+          </p>
+        </section>
+      </main>
+
+      <footer>
+        <span>shellarena</span>
+        <span id="footer-date"></span>
+      </footer>
+    </div>
+
+    <script>
+      window.ARENA_DATA = {"meta":{"generatedAt":"2026-11-21T12:57:44Z","host":"Resonance","platform":"Linux 6.14.0-37-generic x86_64","cwd":"/home/navid/Desktop/projects/shellarena","hyperfine":"hyperfine 1.18.0","runs":8,"warmup":2,"quick":false,"shellNone":true,"bloodVersion":"blood v0.1.4 83951b7","benchmarkCount":4},"shells":[{"key":"elvish","label":"elvish","exe":"/usr/bin/elvish","flags":["-norc"],"ext":"elv","color":"#c792ea","version":"0.20.1+Ubuntu-1ubuntu0.24.04.3","installed":true},{"key":"blood","label":"blood","exe":"./../blood/blood","flags":[],"ext":"bx","color":"#ff3b5c","version":"blood v0.1.4 83951b7","installed":true},{"key":"nushell","label":"nushell","exe":"/usr/bin/nu","flags":["--no-config-file"],"ext":"nu","color":"#5fb3c9","version":"0.117.0","installed":true},{"key":"bash","label":"bash","exe":"/usr/bin/bash","flags":[],"ext":"bash","color":"#6ee7a8","version":"GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)","installed":true},{"key":"dash","label":"dash","exe":"/usr/bin/dash","flags":[],"ext":"dash","color":"#f4d35e","version":"","installed":true}],"known":[{"key":"zsh","label":"zsh","color":"#8fd46d"},{"key":"fish","label":"fish","color":"#8aa6ff"},{"key":"elvish","label":"elvish","color":"#c792ea"},{"key":"blood","label":"blood","color":"#ff3b5c"},{"key":"nushell","label":"nushell","color":"#5fb3c9"},{"key":"bash","label":"bash","color":"#6ee7a8"},{"key":"dash","label":"dash","color":"#f4d35e"}],"missing":[{"key":"zsh","label":"zsh","color":"#8fd46d","reason":"not found on PATH"},{"key":"fish","label":"fish","color":"#8aa6ff","reason":"not found on PATH"}],"filtered":[],"benchmarks":[{"id":"startup","title":"Interpreter startup","description":"Launch the interpreter, parse an empty script, and exit. This isolates process and language-startup cost.","workload":"empty script","commands":{"elvish":"'/usr/bin/elvish' '-norc' './benchmarks/empty.elv'","blood":"'./../blood/blood' './benchmarks/empty.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/empty.nu'","bash":"'/usr/bin/bash' './benchmarks/empty.bash'","dash":"'/usr/bin/dash' './benchmarks/empty.dash'"},"checksums":{"elvish":"","bash":"","nushell":"","blood":"","dash":""},"validation":{"elvish":"skipped","bash":"skipped","nushell":"skipped","blood":"skipped","dash":"skipped"},"error":"","results":{
+  "results": [
+    {
+      "command": "elvish",
+      "mean": 0.0037783496250000004,
+      "stddev": 0.00012958993162492827,
+      "median": 0.0037778360000000006,
+      "user": 0.0014544999999999998,
+      "system": 0.0032268749999999997,
+      "min": 0.0036021990000000004,
+      "max": 0.003930429,
+      "times": [
+        0.003930429,
+        0.003645633,
+        0.0036965,
+        0.0038701530000000003,
+        0.0036021990000000004,
+        0.003926211000000001,
+        0.0037115290000000003,
+        0.0038441430000000004
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "blood",
+      "mean": 0.00141720975,
+      "stddev": 0.0001280894676708991,
+      "median": 0.0013624800000000001,
+      "user": 0.001271375,
+      "system": 0.000082375,
+      "min": 0.001295752,
+      "max": 0.0015799960000000002,
+      "times": [
+        0.0015732440000000001,
+        0.0013958540000000002,
+        0.001329106,
+        0.001295752,
+        0.0015799960000000002,
+        0.001316352,
+        0.0015477350000000002,
+        0.001299639
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "nushell",
+      "mean": 0.011553568375,
+      "stddev": 0.00019926865232210478,
+      "median": 0.011617903,
+      "user": 0.0036802499999999995,
+      "system": 0.007814749999999999,
+      "min": 0.011227265,
+      "max": 0.0117728,
+      "times": [
+        0.011696163,
+        0.011601121,
+        0.01163749,
+        0.011227265,
+        0.011597473,
+        0.0117728,
+        0.011634685,
+        0.01126155
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "bash",
+      "mean": 0.000960252,
+      "stddev": 0.00007866193933354481,
+      "median": 0.0009911885,
+      "user": 0.00053675,
+      "system": 0.000355625,
+      "min": 0.000826243,
+      "max": 0.001043289,
+      "times": [
+        0.000849557,
+        0.0009693770000000001,
+        0.000993493,
+        0.001012239,
+        0.000826243,
+        0.000988884,
+        0.001043289,
+        0.0009989340000000001
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "dash",
+      "mean": 0.0005518508750000001,
+      "stddev": 0.00005112408249805425,
+      "median": 0.0005417775000000001,
+      "user": 0.00035712499999999997,
+      "system": 0.000115875,
+      "min": 0.000497303,
+      "max": 0.0006390040000000001,
+      "times": [
+        0.0005256470000000001,
+        0.000497303,
+        0.0005010100000000001,
+        0.0005579080000000001,
+        0.000603075,
+        0.000574671,
+        0.0006390040000000001,
+        0.000516189
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}},{"id":"arith","title":"Integer arithmetic","description":"Run a linear congruential generator for 10,000 iterations with 64-bit-safe modular arithmetic.","workload":"10,000 iterations","commands":{"elvish":"'/usr/bin/elvish' '-norc' './benchmarks/arith.elv'","blood":"'./../blood/blood' './benchmarks/arith.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/arith.nu'","bash":"'/usr/bin/bash' './benchmarks/arith.bash'","dash":"'/usr/bin/dash' './benchmarks/arith.dash'"},"checksums":{"elvish":"arith 1574320066","bash":"arith 1574320066","nushell":"arith 1574320066","blood":"arith 1574320066","dash":"arith 1574320066"},"validation":{"elvish":"ok","bash":"ok","nushell":"ok","blood":"ok","dash":"ok"},"error":"","results":{
+  "results": [
+    {
+      "command": "elvish",
+      "mean": 1.372765712625,
+      "stddev": 0.04671488829464364,
+      "median": 1.3612333435,
+      "user": 0.9574506249999999,
+      "system": 0.9699453749999999,
+      "min": 1.337373825,
+      "max": 1.484279494,
+      "times": [
+        1.484279494,
+        1.337373825,
+        1.344959932,
+        1.37319704,
+        1.351844794,
+        1.367880087,
+        1.3545866,
+        1.368003929
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "blood",
+      "mean": 0.018855296625000004,
+      "stddev": 0.00023780932756363422,
+      "median": 0.018806646000000003,
+      "user": 0.015774499999999997,
+      "system": 0.0029797499999999998,
+      "min": 0.018553231,
+      "max": 0.019199688,
+      "times": [
+        0.018933068,
+        0.019183487000000003,
+        0.019199688,
+        0.018670726000000002,
+        0.018752923,
+        0.018688881,
+        0.018553231,
+        0.018860369000000002
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "nushell",
+      "mean": 0.045310765125000006,
+      "stddev": 0.0006684311386464015,
+      "median": 0.04509521350000001,
+      "user": 0.036696625,
+      "system": 0.008515124999999998,
+      "min": 0.044613653,
+      "max": 0.046539036000000006,
+      "times": [
+        0.046539036000000006,
+        0.044613653,
+        0.045938036,
+        0.045056225000000005,
+        0.044732123000000006,
+        0.045622216,
+        0.045134202000000005,
+        0.04485063
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "bash",
+      "mean": 0.040079880375,
+      "stddev": 0.000727250753820941,
+      "median": 0.0400086575,
+      "user": 0.039590999999999994,
+      "system": 0.00037374999999999995,
+      "min": 0.039220951000000004,
+      "max": 0.041165902000000004,
+      "times": [
+        0.039220951000000004,
+        0.041165902000000004,
+        0.039401156,
+        0.040909281000000006,
+        0.040023766,
+        0.039415323,
+        0.040509115000000005,
+        0.039993549
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "dash",
+      "mean": 0.016639954875,
+      "stddev": 0.00037757489378568006,
+      "median": 0.0165519605,
+      "user": 0.015921625,
+      "system": 0.0006215,
+      "min": 0.016222610000000002,
+      "max": 0.017324578,
+      "times": [
+        0.016410099,
+        0.016693201,
+        0.01641072,
+        0.016965792,
+        0.016794444000000002,
+        0.017324578,
+        0.016222610000000002,
+        0.016298195
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}},{"id":"strings","title":"String building","description":"Append \"blood\" to a string 10,000 times, accumulate the byte length, and reset at 500 bytes.","workload":"10,000 appends","commands":{"elvish":"'/usr/bin/elvish' '-norc' './benchmarks/strings.elv'","blood":"'./../blood/blood' './benchmarks/strings.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/strings.nu'","bash":"'/usr/bin/bash' './benchmarks/strings.bash'","dash":"'/usr/bin/dash' './benchmarks/strings.dash'"},"checksums":{"elvish":"strings 2525000","bash":"strings 2525000","nushell":"strings 2525000","blood":"strings 2525000","dash":"strings 2525000"},"validation":{"elvish":"ok","bash":"ok","nushell":"ok","blood":"ok","dash":"ok"},"error":"","results":{
+  "results": [
+    {
+      "command": "elvish",
+      "mean": 1.386107865375,
+      "stddev": 0.02971852664558659,
+      "median": 1.37563163,
+      "user": 0.9750867499999999,
+      "system": 0.9779343749999999,
+      "min": 1.366765661,
+      "max": 1.454535025,
+      "times": [
+        1.367099177,
+        1.371008269,
+        1.376915296,
+        1.454535025,
+        1.37450804,
+        1.366765661,
+        1.401276235,
+        1.37675522
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "blood",
+      "mean": 0.034428016000000006,
+      "stddev": 0.0004697020549731489,
+      "median": 0.034329672000000006,
+      "user": 0.030551749999999996,
+      "system": 0.0037583750000000004,
+      "min": 0.033716195000000004,
+      "max": 0.035206452,
+      "times": [
+        0.034131197,
+        0.033716195000000004,
+        0.035206452,
+        0.034381416000000005,
+        0.034160644000000004,
+        0.03471858,
+        0.034277928,
+        0.034831716000000006
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "nushell",
+      "mean": 0.05796590787500001,
+      "stddev": 0.0013315692095026668,
+      "median": 0.057812581,
+      "user": 0.05003475,
+      "system": 0.007810375,
+      "min": 0.056249737,
+      "max": 0.060571267000000005,
+      "times": [
+        0.057784978,
+        0.058995461000000006,
+        0.057840184,
+        0.05811007000000001,
+        0.057029105000000004,
+        0.060571267000000005,
+        0.057146461,
+        0.056249737
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "bash",
+      "mean": 0.09110160925000002,
+      "stddev": 0.003978265596120634,
+      "median": 0.08981554600000001,
+      "user": 0.09032649999999999,
+      "system": 0.000624,
+      "min": 0.087382573,
+      "max": 0.100021097,
+      "times": [
+        0.09016726300000001,
+        0.100021097,
+        0.09325250700000001,
+        0.090539985,
+        0.088935761,
+        0.087382573,
+        0.08946382900000001,
+        0.08904985900000001
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "dash",
+      "mean": 0.027663610375,
+      "stddev": 0.00039863588275694696,
+      "median": 0.027827121500000003,
+      "user": 0.027070750000000005,
+      "system": 0.00049675,
+      "min": 0.027002492000000003,
+      "max": 0.028030895,
+      "times": [
+        0.027101300000000002,
+        0.028030895,
+        0.027615502,
+        0.027855881000000002,
+        0.027961383000000003,
+        0.027943068,
+        0.027798362,
+        0.027002492000000003
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}},{"id":"functions","title":"Function calls","description":"Advance the same LCG with 5,000 calls to a user-defined function.","workload":"5,000 calls","commands":{"elvish":"'/usr/bin/elvish' '-norc' './benchmarks/func.elv'","blood":"'./../blood/blood' './benchmarks/func.bx'","nushell":"'/usr/bin/nu' '--no-config-file' './benchmarks/func.nu'","bash":"'/usr/bin/bash' './benchmarks/func.bash'","dash":"'/usr/bin/dash' './benchmarks/func.dash'"},"checksums":{"elvish":"func 1581940221","bash":"func 1581940221","nushell":"func 1581940221","blood":"func 1581940221","dash":"func 1581940221"},"validation":{"elvish":"ok","bash":"ok","nushell":"ok","blood":"ok","dash":"ok"},"error":"","results":{
+  "results": [
+    {
+      "command": "elvish",
+      "mean": 0.7916973853750001,
+      "stddev": 0.04719381442712225,
+      "median": 0.767629164,
+      "user": 0.537828,
+      "system": 0.56928975,
+      "min": 0.7528635450000001,
+      "max": 0.8656462140000001,
+      "times": [
+        0.7962965280000001,
+        0.759569177,
+        0.7593022450000001,
+        0.7528635450000001,
+        0.7636385840000001,
+        0.771619744,
+        0.8646430460000001,
+        0.8656462140000001
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "blood",
+      "mean": 0.019773249,
+      "stddev": 0.0003048043699021202,
+      "median": 0.019835372500000004,
+      "user": 0.015829875,
+      "system": 0.0038550000000000004,
+      "min": 0.019329547000000002,
+      "max": 0.020160524000000003,
+      "times": [
+        0.019329547000000002,
+        0.019427003,
+        0.020040544,
+        0.019747585,
+        0.019923160000000002,
+        0.019567912,
+        0.019989717,
+        0.020160524000000003
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "nushell",
+      "mean": 0.038931421875,
+      "stddev": 0.0013290000811657988,
+      "median": 0.038386164,
+      "user": 0.030834749999999998,
+      "system": 0.007951375,
+      "min": 0.038100213,
+      "max": 0.042042076000000005,
+      "times": [
+        0.038158474000000005,
+        0.042042076000000005,
+        0.038206165,
+        0.039414832000000004,
+        0.038757287,
+        0.038471442,
+        0.038300886,
+        0.038100213
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "bash",
+      "mean": 1.7431573569999999,
+      "stddev": 0.035013437867685474,
+      "median": 1.72762817,
+      "user": 1.0252818750000001,
+      "system": 0.8978811250000001,
+      "min": 1.69687545,
+      "max": 1.787096695,
+      "times": [
+        1.787096695,
+        1.723708253,
+        1.781588171,
+        1.69687545,
+        1.71823415,
+        1.72653153,
+        1.7287248100000001,
+        1.782499797
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "command": "dash",
+      "mean": 0.986681101875,
+      "stddev": 0.01891172063010678,
+      "median": 0.9842096695,
+      "user": 0.518582125,
+      "system": 0.568378875,
+      "min": 0.964955419,
+      "max": 1.021090243,
+      "times": [
+        0.9700023660000001,
+        0.964955419,
+        1.021090243,
+        0.9720814280000001,
+        1.000537483,
+        0.9963625370000001,
+        0.9896088270000001,
+        0.978810512
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}}]};
+      (function () {
+        "use strict";
+
+        const DATA = window.ARENA_DATA || {};
+        const META = DATA.meta || {};
+        const ALL_SHELLS = Array.isArray(DATA.shells) ? DATA.shells.filter(function (s) { return s && s.installed; }) : [];
+        const KNOWN = Array.isArray(DATA.known) ? DATA.known : [];
+        const MISSING = Array.isArray(DATA.missing) ? DATA.missing : [];
+        const FILTERED = Array.isArray(DATA.filtered) ? DATA.filtered : [];
+        const ALL_BENCHES = Array.isArray(DATA.benchmarks) ? DATA.benchmarks : [];
+        const BENCHES = ALL_BENCHES.filter(function (b) {
+          return b && b.results && Array.isArray(b.results.results) && b.results.results.length > 0;
+        });
+
+        const SHELL_BY_KEY = {};
+        ALL_SHELLS.forEach(function (s) { SHELL_BY_KEY[s.key] = s; });
+
+        const state = { log: true };
+
+        const $ = function (id) { return document.getElementById(id); };
+
+        function esc(value) {
+          return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+          });
+        }
+
+        function fmtTime(seconds) {
+          const t = Number(seconds);
+          if (!isFinite(t) || t <= 0) return "—";
+          if (t >= 1) return t.toFixed(t < 10 ? 3 : 2) + " s";
+          if (t >= 1e-3) {
+            const ms = t * 1e3;
+            return ms.toFixed(ms < 10 ? 2 : 1) + " ms";
+          }
+          if (t >= 1e-6) return (t * 1e6).toFixed(1) + " µs";
+          return t.toExponential(2) + " s";
+        }
+
+        function fmtRatio(ratio) {
+          const r = Number(ratio);
+          if (!isFinite(r) || r <= 0) return "—";
+          if (r < 10) return r.toFixed(2) + "×";
+          if (r < 100) return r.toFixed(1) + "×";
+          return Math.round(r).toLocaleString() + "×";
+        }
+
+        function labelFor(key) {
+          const s = SHELL_BY_KEY[key];
+          if (s && s.label) return s.label;
+          const k = KNOWN.find(function (x) { return x.key === key; });
+          return k && k.label ? k.label : key;
+        }
+
+        function resultFor(bench, key) {
+          const list = bench && bench.results && Array.isArray(bench.results.results) ? bench.results.results : [];
+          return list.find(function (r) { return r && r.command === key; }) || null;
+        }
+
+        function benchRows(bench) {
+          const rows = [];
+          ALL_SHELLS.forEach(function (s) {
+            const r = resultFor(bench, s.key);
+            if (r) rows.push({ shell: s, result: r });
+          });
+          rows.sort(function (a, b) { return a.result.median - b.result.median; });
+          return rows;
+        }
+
+        // Bar length is time: 2% for the fastest bar, 100% for the slowest.
+        function barPct(value, min, max) {
+          const v = Number(value);
+          const lo = Number(min);
+          const hi = Number(max);
+          if (!isFinite(v) || v <= 0 || !isFinite(lo) || !isFinite(hi)) return 0;
+          if (hi <= lo * 1.0000001) return 2;
+          let t;
+          if (state.log) {
+            t = Math.log(v / lo) / Math.log(hi / lo);
+          } else {
+            t = (v - lo) / (hi - lo);
+          }
+          t = Math.max(0, Math.min(1, t));
+          return 2 + 98 * t;
+        }
+
+        const stats = {};
+        ALL_SHELLS.forEach(function (s) {
+          stats[s.key] = { ratios: [], per: {} };
+        });
+
+        BENCHES.forEach(function (bench) {
+          const rows = benchRows(bench);
+          if (!rows.length) return;
+          const fastest = rows[0].result.median;
+          rows.forEach(function (row) {
+            stats[row.shell.key].ratios.push(row.result.median / fastest);
+            stats[row.shell.key].per[bench.id] = {
+              result: row.result,
+              ratio: row.result.median / fastest
+            };
+          });
+        });
+
+        const ranking = ALL_SHELLS.map(function (s) {
+          const ratios = stats[s.key].ratios;
+          const geo = ratios.length
+            ? Math.exp(ratios.reduce(function (acc, value) { return acc + Math.log(value); }, 0) / ratios.length)
+            : Infinity;
+          return {
+            shell: s,
+            ratios: ratios,
+            geo: geo,
+            count: ratios.length,
+            complete: ratios.length === BENCHES.length
+          };
+        });
+
+        const complete = ranking.filter(function (r) { return r.complete && r.count > 0; })
+          .sort(function (a, b) { return a.geo - b.geo; });
+        const partial = ranking.filter(function (r) { return !r.complete && r.count > 0; })
+          .sort(function (a, b) { return a.geo - b.geo; });
+        const empty = ranking.filter(function (r) { return r.count === 0; });
+        const ordered = complete.concat(partial).concat(empty);
+        const leader = complete[0] || null;
+
+        // ---------- header ----------
+
+        const meta = [];
+        meta.push(
+          ALL_SHELLS.length + (ALL_SHELLS.length === 1 ? " shell" : " shells") + " · " +
+          BENCHES.length + (BENCHES.length === 1 ? " benchmark" : " benchmarks") + " · " +
+          META.runs + " runs + " + META.warmup + " warmup"
+        );
+        meta.push(
+          "hyperfine " + (META.hyperfine || "?").replace(/^hyperfine\s*/, "") +
+          (META.shellNone ? " · --shell=none" : "") +
+          (META.host ? " · host " + META.host : "") +
+          (META.platform ? " · " + META.platform : "")
+        );
+        meta.push(
+          "generated " + (META.generatedAt ? META.generatedAt.replace("T", " ").replace("Z", " UTC") : "?") +
+          (META.bloodVersion ? " · blood " + META.bloodVersion.replace(/^blood\s+/, "") : "") +
+          (leader ? " · fastest " + leader.shell.label : "")
+        );
+        $("meta").innerHTML = meta.map(function (line) { return "<div>" + esc(line) + "</div>"; }).join("");
+        $("footer-date").textContent = META.generatedAt ? META.generatedAt.replace("T", " ").replace("Z", " UTC") : "";
+
+        // ---------- scale toggle ----------
+
+        $("scale-toggle").addEventListener("click", function () {
+          state.log = !state.log;
+          this.textContent = "scale: " + (state.log ? "log" : "linear");
+          renderOverall();
+          renderBenchmarks();
+          renderMethod();
+        });
+
+        // ---------- overall ----------
+
+        function renderOverall() {
+          const el = $("overall-bars");
+          if (!complete.length) {
+            el.innerHTML = '<div class="empty">no complete results</div>';
+            return;
+          }
+          const lo = complete[0].geo;
+          const hi = complete[complete.length - 1].geo;
+          const span = lo > 0 ? hi / lo : hi;
+          el.innerHTML = complete.map(function (entry, index) {
+            const norm = lo > 0 ? entry.geo / lo : entry.geo;
+            const pct = barPct(norm, 1, span);
+            const value = index === 0 ? "1.00×" : fmtRatio(norm);
+            return '' +
+              '<div class="bar-row">' +
+                '<div class="rank">' + (index + 1) + "</div>" +
+                '<div class="shell-name">' + esc(entry.shell.label) + "</div>" +
+                '<div class="track" title="' + esc(entry.shell.label + " — " + (index === 0 ? "fastest overall" : fmtRatio(norm) + " slower than " + leader.shell.label)) + '">' +
+                  '<div class="fill' + (index === 0 ? " fast" : "") + '" style="width:' + pct.toFixed(2) + '%"></div>' +
+                "</div>" +
+                '<div class="value"><b>' + esc(value) + '</b><span>overall</span></div>' +
+              "</div>";
+          }).join("");
+        }
+
+        // ---------- matrix ----------
+
+        function renderMatrix() {
+          const table = $("matrix");
+          if (!BENCHES.length || !ALL_SHELLS.length) {
+            table.innerHTML = "";
+            return;
+          }
+
+          let maxRatio = 1;
+          ordered.forEach(function (entry) {
+            BENCHES.forEach(function (bench) {
+              const item = stats[entry.shell.key].per[bench.id];
+              if (item && item.ratio > maxRatio) maxRatio = item.ratio;
+            });
+          });
+
+          const head = "<thead><tr><th>shell</th>" + BENCHES.map(function (b) {
+            return "<th>" + esc(b.id) + "</th>";
+          }).join("") + "</tr></thead>";
+
+          const body = ordered.map(function (entry) {
+            const cells = BENCHES.map(function (bench) {
+              const item = stats[entry.shell.key].per[bench.id];
+              if (!item) return '<td class="dim">—</td>';
+              const ratio = item.ratio;
+              const t = maxRatio > 1.0001 ? Math.log(ratio) / Math.log(maxRatio) : 0;
+              const hue = 150 - 150 * t;
+              const light = 20 + 7 * (1 - t);
+              const best = ratio <= 1.0005 ? " best" : "";
+              return '<td class="' + best.trim() + '" style="background: hsl(' + hue.toFixed(0) + ', 22%, ' + light.toFixed(1) + '%)">' +
+                '<span class="cell-main">' + (ratio <= 1.0005 ? "1.00×" : fmtRatio(ratio)) + "</span>" +
+                '<span class="cell-sub">' + fmtTime(item.result.median) + "</span></td>";
+            }).join("");
+            return '<tr><th class="rowhead">' + esc(entry.shell.label) + "</th>" + cells + "</tr>";
+          }).join("");
+
+          table.innerHTML = head + "<tbody>" + body + "</tbody>";
+        }
+
+        // ---------- benchmarks ----------
+
+        function renderBenchmarks() {
+          const root = $("benchmarks");
+          if (!BENCHES.length) {
+            root.innerHTML = '<section><div class="empty">no benchmark data</div></section>';
+            return;
+          }
+
+          root.innerHTML = BENCHES.map(function (bench) {
+            const rows = benchRows(bench);
+            if (!rows.length) return "";
+
+            const lo = rows[0].result.median;
+            const hi = rows[rows.length - 1].result.median;
+            const bars = rows.map(function (row, index) {
+              const pct = barPct(row.result.median, lo, hi);
+              const ratio = row.result.median / lo;
+              const ratioText = index === 0 ? "1.00×" : fmtRatio(ratio);
+              return '' +
+                '<div class="bar-row">' +
+                  '<div class="rank">' + (index + 1) + "</div>" +
+                  '<div class="shell-name">' + esc(row.shell.label) + "</div>" +
+                  '<div class="track" title="' + esc(row.shell.label + " — mean " + fmtTime(row.result.mean) + ", range " + fmtTime(row.result.min) + "–" + fmtTime(row.result.max)) + '">' +
+                    '<div class="fill' + (index === 0 ? " fast" : "") + '" style="width:' + pct.toFixed(2) + '%"></div>' +
+                  "</div>" +
+                  '<div class="value"><b>' + fmtTime(row.result.median) + "</b><span>" + esc(ratioText) + "</span></div>" +
+                "</div>";
+            }).join("");
+
+            const checks = ALL_SHELLS.map(function (s) {
+              return bench.validation ? bench.validation[s.key] : null;
+            }).filter(function (v) { return v && v !== "skipped"; });
+            const mismatches = checks.filter(function (v) { return String(v).indexOf("mismatch") === 0; });
+
+            let validation;
+            if (bench.id === "startup") {
+              validation = '<span class="muted">startup probe; no checksum</span>';
+            } else if (mismatches.length) {
+              validation = '<span class="bad">checksum mismatch: ' + esc(mismatches.join("; ")) + "</span>";
+            } else if (checks.length) {
+              validation = '<span class="ok">checksums matched (' + checks.length + "/" + checks.length + ")</span>";
+            } else {
+              validation = '<span class="muted">no validation data</span>';
+            }
+
+            const commandRows = Object.keys(bench.commands || {}).sort().map(function (key) {
+              return "<tr><td>" + esc(labelFor(key)) + "</td><td><code>" + esc(bench.commands[key]) + "</code></td></tr>";
+            }).join("");
+
+            return '' +
+              '<section class="bench">' +
+                '<div class="sectionhead">' +
+                  '<h2><span class="hash">##</span>' + esc(bench.id) + "</h2>" +
+                  '<span class="workload">' + esc(bench.workload) + "</span>" +
+                "</div>" +
+                '<div class="bars">' + bars + "</div>" +
+                '<div class="benchfoot">' + validation +
+                  "<details><summary>commands</summary><div class=\"tablewrap\"><table><tbody>" +
+                    commandRows +
+                  "</tbody></table></div></details>" +
+                "</div>" +
+              "</section>";
+          }).join("");
+
+          const skipped = ALL_BENCHES.filter(function (b) { return BENCHES.indexOf(b) === -1; });
+          if (skipped.length) {
+            root.innerHTML += '<section><div class="empty">missing data: ' +
+              skipped.map(function (b) { return esc(b.title) + " (" + esc(b.error || "no results") + ")"; }).join("; ") +
+              "</div></section>";
+          }
+        }
+
+        // ---------- head-to-head ----------
+
+        const selA = $("h2h-a");
+        const selB = $("h2h-b");
+
+        function entryFor(key) {
+          return ranking.find(function (entry) { return entry.shell.key === key; }) || null;
+        }
+
+        function populateSelects() {
+          const html = ordered.map(function (entry) {
+            return '<option value="' + esc(entry.shell.key) + '">' + esc(entry.shell.label) + "</option>";
+          }).join("");
+          selA.innerHTML = html;
+          selB.innerHTML = html;
+          if (ordered.length > 0) selA.value = ordered[0].shell.key;
+          if (ordered.length > 1) selB.value = ordered[1].shell.key;
+          else if (ordered.length > 0) selB.value = ordered[0].shell.key;
+        }
+
+        function renderH2H() {
+          const a = entryFor(selA.value);
+          const b = entryFor(selB.value);
+          const verdict = $("h2h-verdict");
+          const rows = $("h2h-rows");
+
+          if (!a || !b) {
+            verdict.innerHTML = '<span class="muted">select two shells</span>';
+            rows.innerHTML = "";
+            return;
+          }
+
+          $("h2h-col-a").textContent = a.shell.label;
+          $("h2h-col-b").textContent = b.shell.label;
+
+          if (a.shell.key === b.shell.key) {
+            verdict.innerHTML = '<span class="prompt">&gt;</span>same shell';
+          } else if (isFinite(a.geo) && isFinite(b.geo)) {
+            const faster = a.geo <= b.geo ? a : b;
+            const slower = faster === a ? b : a;
+            verdict.innerHTML = '<span class="prompt">&gt;</span><span class="win">' + esc(faster.shell.label) +
+              "</span> is " + fmtRatio(slower.geo / faster.geo) + " faster than " + esc(slower.shell.label) + " overall";
+          } else {
+            verdict.innerHTML = '<span class="prompt">&gt;</span><span class="muted">not enough data</span>';
+          }
+
+          rows.innerHTML = BENCHES.map(function (bench) {
+            const ra = resultFor(bench, a.shell.key);
+            const rb = resultFor(bench, b.shell.key);
+            if (!ra || !rb) {
+              return "<tr><td>" + esc(bench.id) + '</td><td class="num">—</td><td class="num">—</td><td class="muted">missing</td></tr>';
+            }
+            let outcome;
+            if (a.shell.key === b.shell.key) {
+              outcome = '<span class="muted">tie</span>';
+            } else if (ra.median <= rb.median) {
+              outcome = '<span style="color:var(--good)">' + esc(a.shell.label) + " " + fmtRatio(rb.median / ra.median) + " faster</span>";
+            } else {
+              outcome = '<span style="color:var(--good)">' + esc(b.shell.label) + " " + fmtRatio(ra.median / rb.median) + " faster</span>";
+            }
+            return "<tr><td>" + esc(bench.id) + '</td><td class="num">' + fmtTime(ra.median) +
+              '</td><td class="num">' + fmtTime(rb.median) + "</td><td>" + outcome + "</td></tr>";
+          }).join("");
+        }
+
+        selA.addEventListener("change", renderH2H);
+        selB.addEventListener("change", renderH2H);
+
+        // ---------- shells ----------
+
+        function renderShells() {
+          $("shell-rows").innerHTML = ordered.map(function (entry) {
+            const position = complete.findIndex(function (x) { return x.shell.key === entry.shell.key; });
+            const rank = position >= 0 ? "#" + (position + 1) : "—";
+            return "<tr>" +
+              '<td class="rankcell">' + rank + "</td>" +
+              "<td>" + esc(entry.shell.label) + "</td>" +
+              '<td><span class="shellpath" title="' + esc(entry.shell.exe) + '">' + esc(entry.shell.exe) + "</span></td>" +
+              '<td><span class="shellversion" title="' + esc(entry.shell.version || "") + '">' + esc(entry.shell.version || "version unavailable") + "</span></td>" +
+              '<td class="rankcell">' + entry.count + "/" + BENCHES.length + "</td>" +
+            "</tr>";
+          }).join("");
+
+          const notInstalled = MISSING.map(function (m) { return m.label; });
+          const notRun = FILTERED.map(function (m) { return m.label + " (" + (m.reason || "filtered") + ")"; });
+          const lines = [];
+          if (notInstalled.length) lines.push("not installed: " + notInstalled.join(", "));
+          if (notRun.length) lines.push("not run: " + notRun.join(", "));
+          $("not-tested").innerHTML = lines.length ? lines.map(function (line) { return "<div>" + esc(line) + "</div>"; }).join("") : "";
+        }
+
+        // ---------- method ----------
+
+        function renderMethod() {
+          const tool = "hyperfine " + (META.hyperfine || "?").replace(/^hyperfine\s*/, "") +
+            " · " + META.runs + " runs · " + META.warmup + " warmup" +
+            (META.shellNone ? " · --shell=none" : "");
+          const scale = state.log ? "bar length = log(time); shorter is faster" : "bar length = time; shorter is faster";
+
+          $("method").innerHTML =
+            "<dt>tool</dt><dd>" + esc(tool) + "</dd>" +
+            "<dt>statistic</dt><dd>median wall time; stdout discarded; checksums verified before timing</dd>" +
+            "<dt>scale</dt><dd id=\"method-scale\">" + esc(scale) + "</dd>" +
+            "<dt>scope</dt><dd class=\"muted\">interpreter startup plus workload; median across " + META.runs + " runs</dd>";
+
+          const commands = ALL_BENCHES.map(function (bench) {
+            const map = bench.commands || {};
+            return Object.keys(map).sort().map(function (key) {
+              return "<tr><td>" + esc(bench.id) + "</td><td>" + esc(labelFor(key)) + "</td><td><code>" + esc(map[key]) + "</code></td></tr>";
+            }).join("");
+          }).join("");
+
+          $("command-details").innerHTML =
+            "<details><summary>commands</summary><div class=\"tablewrap\"><table><thead><tr><th>benchmark</th><th>shell</th><th>command</th></tr></thead><tbody>" +
+            commands + "</tbody></table></div></details>";
+        }
+
+        // ---------- start ----------
+
+        populateSelects();
+        renderOverall();
+        renderMatrix();
+        renderBenchmarks();
+        renderH2H();
+        renderShells();
+        renderMethod();
+      })();
+    </script>
+  </body>
+</html>
