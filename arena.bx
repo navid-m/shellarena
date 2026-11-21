@@ -148,7 +148,7 @@ fn detect_shells(root) {
     }
     add_detected(detected, "blood", "blood", blood, [], "bx", "#ff3b5c", "-version")
 
-    add_detected(detected, "nushell", "nushell", which("nu"), ["--no-config-file"], "nu", "#5fb3c9", "--version")
+    add_detected(detected, "nushell", "nushell", which("nu"), ["--no-config-file", "--no-std-lib"], "nu", "#5fb3c9", "--version")
     add_detected(detected, "bash", "bash", which("bash"), [], "bash", "#6ee7a8", "--version")
     add_detected(detected, "dash", "dash", which("dash"), [], "dash", "#f4d35e", "-c 'echo $DASH_VERSION'")
 
