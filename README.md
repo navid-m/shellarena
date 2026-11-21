@@ -14,3 +14,9 @@ speedup factors, a head-to-head view, and a relative-speed matrix.
   `ksh` (ksh93), `zsh`, `fish`, `elvish`, `blood`, `nushell`, `bash`, `dash`
 - A POSIX `sh` for command lookup, plus `date`, `hostname`, and `uname` for the
   report metadata
+
+## Performance Guarantee
+
+And lastly, a quote from the maintainers of Nushell:
+
+> <img src=".github/assets/lol.png">
