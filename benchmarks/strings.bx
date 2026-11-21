@@ -1,13 +1,13 @@
 #!/usr/bin/env blood
 # shellarena: string building
 
-var rounds = 10000
-var i = 0
+var rounds   = 10000
+var i        = 0
 var checksum = 0
-var s = ""
+var s        = ""
 
 while i < rounds {
-    s = s + "blood"
+    s        = s + "blood"
     checksum = checksum + len(s)
     if len(s) >= 500 {
         s = ""
@@ -15,4 +15,4 @@ while i < rounds {
     i = i + 1
 }
 
-say "strings {checksum}"
+say("strings {checksum}")

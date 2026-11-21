@@ -30,13 +30,13 @@ fn jstr(s) {
 
 fn jstr_list(xs) {
     var out = "["
-    var i = 0
+    var i   = 0
     while i < len(xs) {
         if i > 0 {
             out = out + ","
         }
         out = out + jstr(xs[i])
-        i = i + 1
+        i   = i + 1
     }
     return out + "]"
 }
@@ -57,7 +57,7 @@ fn first_line(s) {
 }
 
 fn script_root() {
-    var path = __file__
+    var path  = __file__
     var parts = path.split("/")
     parts.pop()
     var root = parts.join("/")
@@ -134,7 +134,7 @@ fn detect_shells(root) {
     add_detected(detected, "fish", "fish", which("fish"), ["--no-config"], "fish", "#8aa6ff", "--version")
     add_detected(detected, "elvish", "elvish", which("elvish"), ["-norc"], "elv", "#c792ea", "-version")
 
-    var blood = trim(std.env("BLOOD_BIN"))
+    var blood     = trim(std.env("BLOOD_BIN"))
     var candidate = root + "/../blood/blood"
     if blood == "" and sh("test -x " + shq(candidate)).status == 0 {
         blood = candidate
@@ -244,7 +244,7 @@ fn missing_shells(known, detected) {
 
 fn json_shells(shells) {
     var out = "["
-    var i = 0
+    var i   = 0
     while i < len(shells) {
         var s = shells[i]
         if i > 0 {
@@ -260,14 +260,14 @@ fn json_shells(shells) {
         out = out + "\"version\":" + jstr(version_of(s.exe, s.vcmd)) + ","
         out = out + "\"installed\":true"
         out = out + "}"
-        i = i + 1
+        i   = i + 1
     }
     return out + "]"
 }
 
 fn json_marks(items) {
     var out = "["
-    var i = 0
+    var i   = 0
     while i < len(items) {
         var item = items[i]
         if i > 0 {
@@ -279,40 +279,40 @@ fn json_marks(items) {
         out = out + "\"color\":" + jstr(item.color) + ","
         out = out + "\"reason\":" + jstr(item.reason)
         out = out + "}"
-        i = i + 1
+        i   = i + 1
     }
     return out + "]"
 }
 
 fn json_known(known) {
     var out = "["
-    var i = 0
+    var i   = 0
     while i < len(known) {
         var k = known[i]
         if i > 0 {
             out = out + ","
         }
         out = out + "{\"key\":" + jstr(k.key) + ",\"label\":" + jstr(k.label) + ",\"color\":" + jstr(k.color) + "}"
-        i = i + 1
+        i   = i + 1
     }
     return out + "]"
 }
 
 fn validate_bench(bench, shells, root) {
-    var checksums = {}
-    var validation = {}
-    var reference = ""
+    var checksums      = {}
+    var validation     = {}
+    var reference      = ""
     var have_reference = false
     for s in shells {
-        var path = root + "/" + bench.stem + "." + s.ext
-        var cmd = bench_cmd(s, path)
-        var output = trim(sh(cmd).stdout)
+        var path         = root + "/" + bench.stem + "." + s.ext
+        var cmd          = bench_cmd(s, path)
+        var output       = trim(sh(cmd).stdout)
         checksums[s.key] = output
         if bench.id == "startup" {
             validation[s.key] = "skipped"
         } elif not have_reference {
-            reference = output
-            have_reference = true
+            reference         = output
+            have_reference    = true
             validation[s.key] = "ok"
         } elif output == reference {
             validation[s.key] = "ok"
@@ -325,27 +325,27 @@ fn validate_bench(bench, shells, root) {
 
 fn json_map_strings(m) {
     var out = "{"
-    var i = 0
+    var i   = 0
     for key in m {
         if i > 0 {
             out = out + ","
         }
         out = out + jstr(key) + ":" + jstr(m[key])
-        i = i + 1
+        i   = i + 1
     }
     return out + "}"
 }
 
 fn json_commands(bench, shells, root) {
     var out = "{"
-    var i = 0
+    var i   = 0
     for s in shells {
         var path = root + "/" + bench.stem + "." + s.ext
         if i > 0 {
             out = out + ","
         }
         out = out + jstr(s.key) + ":" + jstr(bench_cmd(s, path))
-        i = i + 1
+        i   = i + 1
     }
     return out + "}"
 }
@@ -357,7 +357,7 @@ fn run_benchmark(bench, shells, root, results_dir, runs, warmup) {
         if sh("test -r " + shq(path)).status == 0 {
             usable.append(s)
         } else {
-            say "warning: " + s.label + " is installed but " + path + " is missing"
+            say("warning: " + s.label + " is installed but " + path + " is missing")
         }
     }
 
@@ -368,40 +368,40 @@ fn run_benchmark(bench, shells, root, results_dir, runs, warmup) {
         return result
     }
 
-    say ""
-    say "==> " + bench.title + " (" + bench.workload + ")"
+    say("")
+    say("==> " + bench.title + " (" + bench.workload + ")")
     for s in usable {
-        say "    " + s.label + ": " + root + "/" + bench.stem + "." + s.ext
+        say("    " + s.label + ": " + root + "/" + bench.stem + "." + s.ext)
     }
 
-    var check = validate_bench(bench, usable, root)
-    result.checksums = json_map_strings(check.checksums)
+    var check         = validate_bench(bench, usable, root)
+    result.checksums  = json_map_strings(check.checksums)
     result.validation = json_map_strings(check.validation)
     for s in usable {
         var v = check.validation[s.key]
         if v != "ok" and v != "skipped" {
-            say "warning: " + bench.id + "/" + s.label + ": checksum " + v
+            say("warning: " + bench.id + "/" + s.label + ": checksum " + v)
         }
     }
 
     var results_path = results_dir + "/" + bench.id + ".json"
-    var hf = "hyperfine " + hf_shell_opt + "--warmup " + str(warmup) + " --runs " + str(runs) + " --export-json " + shq(results_path)
+    var hf           = "hyperfine " + hf_shell_opt + "--warmup " + str(warmup) + " --runs " + str(runs) + " --export-json " + shq(results_path)
     for s in usable {
         var path = root + "/" + bench.stem + "." + s.ext
-        hf = hf + " -n " + shq(s.key) + " " + shq(bench_cmd(s, path))
+        hf       = hf + " -n " + shq(s.key) + " " + shq(bench_cmd(s, path))
     }
 
     var rc = sh(hf).status
     if rc != 0 {
         result.error = "hyperfine exited with status " + str(rc)
-        say "error: hyperfine failed for " + bench.id
+        say("error: hyperfine failed for " + bench.id)
         return result
     }
 
     var raw = std.read_file(results_path)
     if raw == none {
         result.error = "hyperfine did not write " + results_path
-        say "error: " + result.error
+        say("error: " + result.error)
         return result
     }
 
@@ -411,7 +411,7 @@ fn run_benchmark(bench, shells, root, results_dir, runs, warmup) {
 
 fn json_benchmarks(benchmarks) {
     var out = "["
-    var i = 0
+    var i   = 0
     for b in benchmarks {
         if i > 0 {
             out = out + ","
@@ -427,65 +427,65 @@ fn json_benchmarks(benchmarks) {
         out = out + "\"error\":" + jstr(b.error) + ","
         out = out + "\"results\":" + b.results
         out = out + "}"
-        i = i + 1
+        i   = i + 1
     }
     return out + "]"
 }
 
 fn usage() {
-    say "shellarena — cross-shell performance arena"
-    say ""
-    say "usage: blood arena.bx [--quick] [--help]"
-    say ""
-    say "environment:"
-    say "  BLOOD_BIN     path to the Blood binary"
-    say "  ARENA_RUNS    hyperfine runs per command (default 8)"
-    say "  ARENA_WARMUP  hyperfine warmup runs (default 2)"
-    say "  ARENA_ONLY    comma-separated shells (ksh,zsh,fish,elvish,blood,nushell,bash,dash)"
-    say "  ARENA_BENCH   comma-separated benchmarks (startup,arith,strings,functions)"
+    say("shellarena — cross-shell performance arena")
+    say("")
+    say("usage: blood arena.bx [--quick] [--help]")
+    say("")
+    say("environment:")
+    say("  BLOOD_BIN     path to the Blood binary")
+    say("  ARENA_RUNS    hyperfine runs per command (default 8)")
+    say("  ARENA_WARMUP  hyperfine warmup runs (default 2)")
+    say("  ARENA_ONLY    comma-separated shells (ksh,zsh,fish,elvish,blood,nushell,bash,dash)")
+    say("  ARENA_BENCH   comma-separated benchmarks (startup,arith,strings,functions)")
 }
 
-var root = script_root()
+var root        = script_root()
 var results_dir = root + "/results"
 var report_path = root + "/report.html"
-var data_path = results_dir + "/arena.json"
+var data_path   = results_dir + "/arena.json"
 
 if contains(args, "--help") or contains(args, "-h") {
     usage()
     exit(0)
 }
 
-var quick = contains(args, "--quick")
-var runs = 8
+var quick  = contains(args, "--quick")
+var runs   = 8
 var warmup = 2
 if quick {
-    runs = 3
+    runs   = 3
     warmup = 1
 }
-runs = int_env("ARENA_RUNS", runs, 1)
+runs   = int_env("ARENA_RUNS", runs, 1)
 warmup = int_env("ARENA_WARMUP", warmup, 0)
 
 if which("hyperfine") == "" {
-    say "error: hyperfine is required but was not found on PATH"
-    say "install it from https://github.com/sharkdp/hyperfine"
+    say("error: hyperfine is required but was not found on PATH")
+    say("install it from https://github.com/sharkdp/hyperfine")
     exit(1)
 }
 
-say "shellarena"
-say "  root:      " + root
-say "  hyperfine: " + first_line(sh("hyperfine --version").stdout)
-say "  runs:      " + str(runs) + " (warmup " + str(warmup) + ")"
+say("shellarena")
+say("  root:      " + root)
+say("  hyperfine: " + first_line(sh("hyperfine --version").stdout))
+say("  runs:      " + str(runs) + " (warmup " + str(warmup) + ")")
 if sh("hyperfine --help 2>&1").stdout.contains("--shell=none") {
     hf_shell_opt = "--shell=none "
 }
 
 sh("mkdir -p " + shq(results_dir))
 
-var known = known_shells()
+var known    = known_shells()
 var detected = detect_shells(root)
 var only_raw = trim(std.env("ARENA_ONLY"))
 var filtered = []
-var shells = filter_shells(detected, only_raw, filtered)
+var shells   = filter_shells(detected, only_raw, filtered)
 
 var bench_defs = [
     {"id": "startup", "title": "Interpreter startup", "description": "Launch the interpreter, parse an empty script, and exit. This isolates process and language-startup cost.", "workload": "empty script", "stem": "benchmarks/empty"},
@@ -495,26 +495,26 @@ var bench_defs = [
 ]
 
 var bench_filter = trim(std.env("ARENA_BENCH"))
-var benches = filter_benches(bench_defs, bench_filter)
+var benches      = filter_benches(bench_defs, bench_filter)
 
 if len(shells) == 0 {
-    say "error: no supported shells were found"
-    say "install at least one of: ksh, zsh, fish, elvish, blood, nu, bash, dash"
+    say("error: no supported shells were found")
+    say("install at least one of: ksh, zsh, fish, elvish, blood, nu, bash, dash")
     exit(1)
 }
 if len(benches) == 0 {
-    say "error: no benchmarks selected"
+    say("error: no benchmarks selected")
     exit(1)
 }
 
-say "  shells:    "
+say("  shells:    ")
 for s in shells {
-    say "    " + s.label + "  " + s.exe
+    say("    " + s.label + "  " + s.exe)
 }
 if len(filtered) > 0 {
-    say "  filtered:  "
+    say("  filtered:  ")
     for f in filtered {
-        say "    " + f.label + "  (" + f.reason + ")"
+        say("    " + f.label + "  (" + f.reason + ")")
     }
 }
 
@@ -523,55 +523,55 @@ for b in benches {
     bench_results.append(run_benchmark(b, shells, root, results_dir, runs, warmup))
 }
 
-var missing = missing_shells(known, detected)
-var generated_at = trim(sh("date -u +%Y-%m-%dT%H:%M:%SZ").stdout)
-var host = trim(sh("hostname").stdout)
-var platform = trim(sh("uname -srm").stdout)
-var cwd = trim(sh("pwd").stdout)
+var missing           = missing_shells(known, detected)
+var generated_at      = trim(sh("date -u +%Y-%m-%dT%H:%M:%SZ").stdout)
+var host              = trim(sh("hostname").stdout)
+var platform          = trim(sh("uname -srm").stdout)
+var cwd               = trim(sh("pwd").stdout)
 var hyperfine_version = first_line(sh("hyperfine --version").stdout)
-var blood_shell = shell_by_key(shells, "blood")
-var blood_version = ""
+var blood_shell       = shell_by_key(shells, "blood")
+var blood_version     = ""
 if blood_shell != none {
     blood_version = version_of(blood_shell.exe, blood_shell.vcmd)
 }
 
 var meta = "{"
-meta = meta + "\"generatedAt\":" + jstr(generated_at) + ","
-meta = meta + "\"host\":" + jstr(host) + ","
-meta = meta + "\"platform\":" + jstr(platform) + ","
-meta = meta + "\"cwd\":" + jstr(cwd) + ","
-meta = meta + "\"hyperfine\":" + jstr(hyperfine_version) + ","
-meta = meta + "\"runs\":" + str(runs) + ","
-meta = meta + "\"warmup\":" + str(warmup) + ","
-meta = meta + "\"quick\":" + str(quick) + ","
-meta = meta + "\"shellNone\":" + str(hf_shell_opt != "") + ","
-meta = meta + "\"bloodVersion\":" + jstr(blood_version) + ","
-meta = meta + "\"benchmarkCount\":" + str(len(bench_results))
-meta = meta + "}"
+meta     = meta + "\"generatedAt\":" + jstr(generated_at) + ","
+meta     = meta + "\"host\":" + jstr(host) + ","
+meta     = meta + "\"platform\":" + jstr(platform) + ","
+meta     = meta + "\"cwd\":" + jstr(cwd) + ","
+meta     = meta + "\"hyperfine\":" + jstr(hyperfine_version) + ","
+meta     = meta + "\"runs\":" + str(runs) + ","
+meta     = meta + "\"warmup\":" + str(warmup) + ","
+meta     = meta + "\"quick\":" + str(quick) + ","
+meta     = meta + "\"shellNone\":" + str(hf_shell_opt != "") + ","
+meta     = meta + "\"bloodVersion\":" + jstr(blood_version) + ","
+meta     = meta + "\"benchmarkCount\":" + str(len(bench_results))
+meta     = meta + "}"
 
 var data = "{"
-data = data + "\"meta\":" + meta + ","
-data = data + "\"shells\":" + json_shells(shells) + ","
-data = data + "\"known\":" + json_known(known) + ","
-data = data + "\"missing\":" + json_marks(missing) + ","
-data = data + "\"filtered\":" + json_marks(filtered) + ","
-data = data + "\"benchmarks\":" + json_benchmarks(bench_results)
-data = data + "}"
+data     = data + "\"meta\":" + meta + ","
+data     = data + "\"shells\":" + json_shells(shells) + ","
+data     = data + "\"known\":" + json_known(known) + ","
+data     = data + "\"missing\":" + json_marks(missing) + ","
+data     = data + "\"filtered\":" + json_marks(filtered) + ","
+data     = data + "\"benchmarks\":" + json_benchmarks(bench_results)
+data     = data + "}"
 
 var template = std.read_file(root + "/lib/report.html")
 if template == none {
-    say "error: cannot read " + root + "/lib/report.html"
+    say("error: cannot read " + root + "/lib/report.html")
     exit(1)
 }
 
 var html = template.replace("/*__ARENA_DATA__*/", data)
 if not std.write_file(report_path, html) {
-    say "error: cannot write " + report_path
+    say("error: cannot write " + report_path)
     exit(1)
 }
 std.write_file(data_path, data)
 
-say ""
-say "done"
-say "  report: " + report_path
-say "  data:   " + data_path
+say("")
+say("done")
+say("  report: " + report_path)
+say("  data:   " + data_path)

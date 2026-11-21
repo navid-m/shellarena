@@ -1,15 +1,15 @@
 #!/usr/bin/env blood
 # shellarena: integer arithmetic (linear congruential generator)
 
-var rounds = 10000
-var i = 0
-var x = 1
+var rounds   = 10000
+var i        = 0
+var x        = 1
 var checksum = 0
 
 while i < rounds {
-    x = (x * 48271) % 2147483647
+    x        = (x * 48271) % 2147483647
     checksum = (checksum + x) % 2147483647
-    i = i + 1
+    i        = i + 1
 }
 
-say "arith {checksum}"
+say("arith {checksum}")

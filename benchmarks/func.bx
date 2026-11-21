@@ -5,15 +5,15 @@ fn step(n) {
     return (n * 48271) % 2147483647
 }
 
-var rounds = 5000
-var i = 0
-var x = 1
+var rounds   = 5000
+var i        = 0
+var x        = 1
 var checksum = 0
 
 while i < rounds {
-    x = step(x)
+    x        = step(x)
     checksum = (checksum + x) % 2147483647
-    i = i + 1
+    i        = i + 1
 }
 
-say "func {checksum}"
+say("func {checksum}")
